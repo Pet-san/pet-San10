@@ -4,16 +4,13 @@
    ========================================================================== */
 
 const STORE_CONFIG = {
-  // رقم إصدار البيانات
   dataVersion: 3,
 
-  // اسم المتجر ووصفه
   storeName: "Pet San",
   storeTagline: "تجربة تسوق بسيطة، واضحة ومباشرة",
   storeDescription: "متجر إلكتروني يقدم أفضل المنتجات بطلب مباشر عبر واتساب.",
 
-  // بيانات التواصل
-  whatsappNumber: "",    // بصيغة دولية بدون + وبدون مسافات، مثال: 9647xxxxxxxxx
+  whatsappNumber: "",
   phone: "",
   instagram: "",
   tiktok: "",
@@ -32,16 +29,16 @@ const STORE_CONFIG = {
   firebaseMessagingSenderId: "615362246830",
   firebaseAppId: "1:615362246830:web:c33027364d9eebb9be553f",
 
-  // حسابات الأدمن المسموح لها بدخول لوحة التحكم
+  // حساب الأدمن المسموح له بالدخول
   adminEmails: ["a@email.com"],
 
   // === Firebase Realtime Database ===
   firebaseDatabaseURL: "https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app",
 
-  // === ImgBB (رفع الصور) ===
+  // === ImgBB ===
   imgbbApiKey: "53a5a9f8ee5d5c4443be4eb275e54418",
 
-  // === ImageKit (تحسين وضغط الصور عبر CDN - بدون سلاش في النهاية مع الفاصلة) ===
+  // === ImageKit ===
   imageKitEndpoint: "https://ik.imagekit.io/petshop",
 
   // === Algolia Search Engine ===
@@ -50,6 +47,5 @@ const STORE_CONFIG = {
   algoliaAdminKey: "",
   algoliaIndexName: "products",
 
-  // الحد الأقصى للمنتجات المستوردة من الإكسل
   maxExcelImportCount: 100
 };
