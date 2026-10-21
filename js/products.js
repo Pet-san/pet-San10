@@ -1,6 +1,6 @@
 /* ==========================================================================
    products.js (معمارية هجينة معتمدة على الفهرس المصغر حتى 2000 منتج)
-   + فرز وترتيب لحظي في ذاكرة الهاتف + بحث سريع يدعم كيبورد الموبايل
+   + فرز وترتيب لحظي + تبديل صور الخيارات تلقائياً عند النقر
    ========================================================================== */
 
 function productMediaHtml(product) {
@@ -26,11 +26,11 @@ function renderSkeletonCards(count) {
 
 function productHasOptions(product) {
   if (!product) return false;
+  const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
   const hasColors = Array.isArray(product.colors) && product.colors.length > 0;
   const hasSizes = Array.isArray(product.sizes) && product.sizes.length > 0;
-  const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
   const hasMatrix = typeof Store !== "undefined" && typeof Store.hasVariantMatrix === "function" && Store.hasVariantMatrix(product);
-  return hasColors || hasSizes || hasVariants || hasMatrix;
+  return hasVariants || hasColors || hasSizes || hasMatrix;
 }
 
 function renderProductCard(product) {
@@ -671,10 +671,12 @@ function renderProductDetail(mount, product) {
 
   document.title = product.name + " — " + (Store.getSettings().storeName || "متجرك الإلكتروني");
 
-  const hasColors = !!(product.colors && product.colors.length);
-  const hasSizes = !!(product.sizes && product.sizes.length);
+  // دعم نظام الخيارات الحديث (Variants) مع دعم التوافق للألوان والمقاسات القديمة
+  const hasModernVariants = Array.isArray(product.variants) && product.variants.length > 0 && typeof product.variants[0] === 'object';
+  const hasColors = !hasModernVariants && !!(product.colors && product.colors.length);
+  const hasSizes = !hasModernVariants && !!(product.sizes && product.sizes.length);
   const hasMatrix = hasColors || hasSizes;
-  const hasLegacyVariants = !hasMatrix && product.variants && product.variants.length > 0;
+  const hasLegacyVariants = !hasModernVariants && !hasMatrix && product.variants && product.variants.length > 0;
   const productAvailable = product.available !== false;
 
   let galleryHtml = "";
@@ -704,6 +706,32 @@ function renderProductDetail(mount, product) {
     const cat = Store.getCategories().find(function (c) { return c.id === product.categoryId; });
     const key = cat ? cat.icon : "box";
     galleryHtml = '<div class="placeholder-icon" style="height: 100%; display: flex; align-items: center; justify-content: center; background: var(--olive-50); border-radius: 16px; min-height:300px;">' + iconSvg(key) + "</div>";
+  }
+
+  /* خيارات المنتج الحديثة (النوع / الحجم / المقاس / اللون مع صورها) */
+  let modernVariantsHtml = "";
+  if (hasModernVariants) {
+    modernVariantsHtml = `
+      <div class="field" style="margin-bottom: 20px;">
+        <label style="display:block; margin-bottom:10px; font-weight:700; color:var(--ink-800);">الخيارات المتاحة:</label>
+        <div id="modernVariantsWrap" style="display: flex; flex-wrap: wrap; gap: 10px;">
+          ${product.variants.map((v, i) => {
+            const thumbImg = v.image ? `<img src="${escapeHtml(window.getIkUrl ? window.getIkUrl(v.image, 100, 80) : v.image)}" style="width:26px; height:26px; border-radius:6px; object-fit:cover; margin-inline-end:6px;">` : '';
+            return `
+              <button type="button" 
+                      class="variant-chip ${i === 0 ? 'is-selected' : ''}" 
+                      data-variant-name="${escapeHtml(v.name)}" 
+                      data-variant-img="${escapeHtml(v.image || '')}"
+                      data-variant-stock="${Number(v.stock) || 0}"
+                      style="display:inline-flex; align-items:center; padding:8px 14px; border-radius:999px; border:1px solid ${i === 0 ? 'var(--primary)' : 'var(--line-strong)'}; background:${i === 0 ? 'var(--olive-50)' : '#fff'}; color:${i === 0 ? 'var(--primary)' : 'var(--ink-800)'}; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s ease;">
+                ${thumbImg}
+                <span>${escapeHtml(v.name)}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
   }
 
   let colorsHtml = "";
@@ -756,9 +784,12 @@ function renderProductDetail(mount, product) {
         '</div>';
   }
 
-  const initialStock = hasMatrix
-    ? Store.getVariantStock(product, hasColors ? product.colors[0].name : null, hasSizes ? product.sizes[0] : null)
-    : Store.getTotalStock(product);
+  let initialStock = Store.getTotalStock ? Store.getTotalStock(product) : (Number(product.stock) || 0);
+  if (hasModernVariants) {
+    initialStock = Number(product.variants[0].stock) || 0;
+  } else if (hasMatrix) {
+    initialStock = Store.getVariantStock(product, hasColors ? product.colors[0].name : null, hasSizes ? product.sizes[0] : null);
+  }
   const initiallyOutOfStock = !productAvailable || initialStock <= 0;
 
   mount.innerHTML =
@@ -778,6 +809,7 @@ function renderProductDetail(mount, product) {
           '<div id="descFade" style="position:absolute; bottom:0; left:0; right:0; height:40px; background:linear-gradient(transparent, var(--cream));"></div>' +
         '</div>' +
         '<button id="descToggle" style="background:none; border:none; color:var(--olive-700); font-weight:700; font-size:0.9rem; padding:4px 0; margin-bottom:12px; cursor:pointer;">قراءة المزيد ↓</button>' +
+        modernVariantsHtml +
         sizesHtml +
         legacyVariantsHtml +
         '<div class="qty-stepper" id="qtyStepperWrap" style="' + (initiallyOutOfStock ? "display:none;" : "") + '"><button type="button" id="qtyMinus">−</button><input type="number" id="qtyInput" value="1" min="1" max="' + Math.max(initialStock, 1) + '"><button type="button" id="qtyPlus">+</button></div>' +
@@ -807,9 +839,11 @@ function renderProductDetail(mount, product) {
       });
   }
 
+  let selectedVariant = hasModernVariants 
+    ? product.variants[0].name 
+    : (hasLegacyVariants ? product.variants[0] : null);
   let selectedColor = hasColors ? product.colors[0].name : null;
   let selectedSize = hasSizes ? product.sizes[0] : null;
-  let selectedVariant = hasLegacyVariants ? product.variants[0] : null;
 
   function updateSmartSizesAvailability() {
     if (!hasSizes) return;
@@ -848,7 +882,13 @@ function renderProductDetail(mount, product) {
   function refreshAvailabilityUI() {
     updateSmartSizesAvailability();
 
-    const stock = hasMatrix ? Store.getVariantStock(product, selectedColor, selectedSize) : Store.getTotalStock(product);
+    let stock = Store.getTotalStock ? Store.getTotalStock(product) : (Number(product.stock) || 0);
+    if (hasModernVariants) {
+      const currentV = product.variants.find(v => v.name === selectedVariant);
+      stock = currentV ? (Number(currentV.stock) || 0) : 0;
+    } else if (hasMatrix) {
+      stock = Store.getVariantStock(product, selectedColor, selectedSize);
+    }
     const outOfStock = !productAvailable || stock <= 0;
 
     const stockLine = document.getElementById("stockLine");
@@ -885,7 +925,7 @@ function renderProductDetail(mount, product) {
       addBtn.addEventListener("click", function () {
         const qty = readSelectedQty();
         const meta = { color: selectedColor, size: selectedSize, variant: selectedVariant };
-        const itemKey = buildCartItemKey(product.id, meta);
+        const itemKey = buildCartItemKey ? buildCartItemKey(product.id, meta) : product.id;
         const res = Store.addToCart(itemKey, qty, meta);
         if (res && res.blocked) showToast("هذا الخيار غير متوفر حاليًا", "error");
         else if (res && res.capped) showToast("وصلت للحد الأقصى المتوفر من هذا المنتج", "error");
@@ -905,11 +945,47 @@ function renderProductDetail(mount, product) {
 
   function readSelectedQty() {
     const qtyInput = document.getElementById("qtyInput");
-    const stock = hasMatrix ? Store.getVariantStock(product, selectedColor, selectedSize) : Store.getTotalStock(product);
+    let stock = Store.getTotalStock ? Store.getTotalStock(product) : (Number(product.stock) || 0);
+    if (hasModernVariants) {
+      const currentV = product.variants.find(v => v.name === selectedVariant);
+      stock = currentV ? (Number(currentV.stock) || 0) : 0;
+    } else if (hasMatrix) {
+      stock = Store.getVariantStock(product, selectedColor, selectedSize);
+    }
     let qty = Math.floor(Number(qtyInput ? qtyInput.value : 1)) || 1;
     qty = Math.max(1, Math.min(qty, Math.max(stock, 1)));
     if (qtyInput) qtyInput.value = qty;
     return qty;
+  }
+
+  /* الاستماع للخيارات الحديثة وتبديل الصورة ومتابعة المخزون */
+  if (hasModernVariants) {
+    document.querySelectorAll(".variant-chip").forEach(chip => {
+      chip.addEventListener("click", function() {
+        document.querySelectorAll(".variant-chip").forEach(c => {
+          c.classList.remove("is-selected");
+          c.style.border = "1px solid var(--line-strong)";
+          c.style.background = "#fff";
+          c.style.color = "var(--ink-800)";
+        });
+
+        this.classList.add("is-selected");
+        this.style.border = "1px solid var(--primary)";
+        this.style.background = "var(--olive-50)";
+        this.style.color = "var(--primary)";
+
+        selectedVariant = this.dataset.variantName;
+        const varImg = this.dataset.variantImg;
+
+        // تبديل الصورة الرئيسية للمنتج بالصورة الخاصة بهذا الخيار
+        if (mainImage && varImg) {
+          mainImage.src = window.getIkUrl ? window.getIkUrl(varImg, 1000, 85) : varImg;
+          thumbs.forEach(t => t.classList.remove("active"));
+        }
+
+        refreshAvailabilityUI();
+      });
+    });
   }
 
   const colorSwatches = document.getElementById("colorSwatches");
