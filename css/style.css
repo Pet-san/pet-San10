@@ -769,3 +769,42 @@ td.row-actions>*+*{margin-inline-start:6px}
     opacity: 1;
   }
 }
+/* تصغير حجم خطوط وتفاصيل كارت المنتج */
+.product-card .product-cat {
+  font-size: 0.72rem !important;
+  margin-bottom: 2px !important;
+}
+.product-card .product-name,
+.product-card .product-name a {
+  font-size: 0.88rem !important;
+  line-height: 1.35 !important;
+  font-weight: 600 !important;
+}
+.product-card .price {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+}
+.product-card .btn-primary {
+  font-size: 0.82rem !important;
+  padding: 6px 10px !important;
+}
+
+/* شارات المنتجات بألوان عصرية واحترافية */
+.badge-featured {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important; /* أصفر ذهبي ملكي */
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35) !important;
+  font-weight: 700 !important;
+}
+.badge-new {
+  background: linear-gradient(135deg, #06b6d4, #0284c7) !important; /* أزرق سماوي عصري يوحي بالحداثة */
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35) !important;
+  font-weight: 700 !important;
+}
+.badge-offer {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important; /* أحمر ناري احترافي للتخفيضات */
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35) !important;
+  font-weight: 700 !important;
+}
