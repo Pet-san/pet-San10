@@ -36,7 +36,7 @@ const STORE_CONFIG = {
   adminEmails: ["a@email.com"],
 
   // === Firebase Realtime Database ===
-  firebaseDatabaseURL: "https://petshop4-bd006-default-rtdb.europe-west1.firebasedatabase.app/",
+  firebaseDatabaseURL: "https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app/",
 
   // === ImgBB (رفع الصور) ===
   imgbbApiKey: "53a5a9f8ee5d5c4443be4eb275e54418",
