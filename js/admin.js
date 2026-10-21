@@ -563,7 +563,7 @@ function renderVariantsList() {
   if (!list) return;
 
   if (!pendingVariants.length) {
-    list.innerHTML = '<p class="field-hint" style="margin:0;">لا توجد خيارات مضافة بعد (سيباع كمنتج مستقل بصورته وسعره الأساسي).</p>';
+    list.innerHTML = "";
     if (stockInput) stockInput.readOnly = false;
     if (stockLabel) stockLabel.textContent = "الكمية المتوفرة الكلية";
     return;
