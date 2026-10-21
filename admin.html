@@ -218,7 +218,7 @@
 
 <!-- ============ Product modal ============ -->
 <div class="modal-overlay" id="productModal">
-  <div class="modal-card" style="max-width: 90vw; width: 500px; max-height: 90vh; overflow-y: auto;">
+  <div class="modal-card" style="max-width: 90vw; width: 620px; max-height: 90vh; overflow-y: auto;">
     <div class="modal-head">
       <h3 id="productModalTitle" style="margin:0;">إضافة منتج</h3>
       <button class="close-modal" id="closeProductModal">__ICON_CLOSE__</button>
@@ -226,7 +226,7 @@
     <form id="productForm">
       <div class="field">
         <label style="display:flex; justify-content:space-between; align-items:center;">
-          صورة المنتج 
+          الصورة الرئيسية للمنتج 
           <button type="button" id="removeProductImageBtn" class="btn-icon btn-sm" style="color:#d32f2f;" title="مسح الصورة">__ICON_TRASH__</button>
         </label>
         <div class="image-upload">
@@ -235,45 +235,43 @@
         </div>
       </div>
       
-      <!-- حقل الصور المتعددة -->
+      <!-- حقل الصور المتعددة للمنتج -->
       <div class="field">
-        <label>صور إضافية للمنتج (اختياري)</label>
+        <label>معرض صور إضافية للمنتج (اختياري)</label>
         <input type="file" id="productExtraImagesInput" accept="image/*" multiple>
         <div id="extraImagesPreview" style="display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap;"></div>
       </div>
 
       <!-- حقل الباركود / كود المادة SKU -->
       <div class="field">
-        <label>الباركود / SKU (اختياري — للمزامنة مع نظام المحاسبة)</label>
+        <label>الباركود / SKU (اختياري — للمزامنة مع نظام المحاسبة والإكسل)</label>
         <input type="text" id="productBarcode" placeholder="امسح بالباركود أو اكتب الكود هنا...">
       </div>
 
       <div class="field"><label>اسم المنتج</label><input type="text" id="productName" required></div>
       <div class="field"><label>الوصف</label><textarea id="productDescription"></textarea></div>
-      <div class="field"><label>السعر (د.ع)</label><input type="number" id="productPrice" min="0" required></div>
+      <div class="field"><label>السعر الأساسي (د.ع)</label><input type="number" id="productPrice" min="0" required></div>
       <div class="field"><label>السعر القديم قبل الخصم (اختياري)</label><input type="number" id="productOldPrice" min="0" placeholder="يظهر مشطوباً بجانب السعر عند تفعيل «عرض خاص»"></div>
       <div class="field"><label>القسم</label><select id="productCategorySelect" required></select></div>
       
-      <div class="field">
-        <label style="display:flex;justify-content:space-between;align-items:center;">
-          الألوان (اختياري)
-          <button type="button" id="addColorBtn" class="btn btn-outline btn-sm">+ إضافة لون</button>
-        </label>
-        <div id="colorsList" style="display:flex;flex-direction:column;gap:10px;"></div>
+      <!-- ============ خيارات ومواصفات المنتج (المقاس / النوع / اللون مع صورة لكل خيار) ============ -->
+      <div class="field" style="background: var(--surface-2); padding: 14px; border-radius: 12px; border: 1px solid var(--line);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div>
+            <strong style="display:block; font-size:0.95rem;">خيارات ومواصفات المنتج</strong>
+            <span style="font-size:0.8rem; color:var(--ink-400);">أضف خيارات (نوع، حجم، مقاس، لون) مع صورة خاصة بكل خيار لتتغير تلقائياً عند اختيارها.</span>
+          </div>
+          <button type="button" id="addVariantBtn" class="btn btn-outline btn-sm">+ إضافة خيار</button>
+        </div>
+        
+        <div id="variantsList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
       </div>
 
-      <div class="field">
-        <label>الاحجام (اختياري) — افصل بينها بفاصلة</label>
-        <input type="text" id="productSizes" placeholder="مثال: S, M, L, XL">
+      <div class="field" id="productStockWrap">
+        <label id="productStockLabel">الكمية المتوفرة الكلية</label>
+        <input type="number" id="productStock" min="0" required>
       </div>
 
-      <div class="field" id="inventoryWrap" style="display:none;">
-        <label>المخزون حسب اللون و الحجم</label>
-        <div id="inventoryGrid" style="overflow-x:auto;"></div>
-        <p class="field-hint">إجمالي المخزون أدناه يُحسب تلقائيًا من هذه الكميات.</p>
-      </div>
-
-      <div class="field" id="productStockWrap"><label id="productStockLabel">الكمية المتوفرة الكلية</label><input type="number" id="productStock" min="0" required></div>
       <div class="field checkbox-row"><input type="checkbox" id="productAvailable"><label for="productAvailable" style="margin:0;">مفعّل / معروض في المتجر</label></div>
       <div class="field checkbox-row"><input type="checkbox" id="productFeatured"><label for="productFeatured" style="margin:0;">منتج مميز</label></div>
       <div class="field checkbox-row"><input type="checkbox" id="productNew"><label for="productNew" style="margin:0;">منتج جديد</label></div>
