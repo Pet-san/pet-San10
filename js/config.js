@@ -25,18 +25,18 @@ const STORE_CONFIG = {
   currencySymbol: "د.ع",
 
   // === Firebase Web App / Authentication ===
-    firebaseApiKey: "AIzaSyA2aBIZ4dMwCSXdsEWRfug0C2ZyUnrXR_I",
-  firebaseAuthDomain: "petshop4-bd006.firebaseapp.com",
-  firebaseProjectId: "petshop4-bd006",
-  firebaseStorageBucket: "petshop4-bd006.firebasestorage.app",
-  firebaseMessagingSenderId: "732533658054",
-  firebaseAppId: "1:732533658054:web:583c7a5a175bbf53eae2c7",
+    firebaseApiKey: "AIzaSyAO5teGRN0iSVyuvrKQGAgBfoHB4A5v7tw",
+  firebaseAuthDomain: "pet-san-10.firebaseapp.com",
+  firebaseProjectId: "pet-san-10",
+  firebaseStorageBucket: "pet-san-10.firebasestorage.app",
+  firebaseMessagingSenderId: "615362246830",
+  firebaseAppId: "1:615362246830:web:c33027364d9eebb9be553f",
   
   // حسابات الأدمن المسموح لها بدخول لوحة التحكم
   adminEmails: ["a@email.com"],
 
   // === Firebase Realtime Database ===
-  firebaseDatabaseURL: "https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app/",
+  firebaseDatabaseURL: "https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app",
 
   // === ImgBB (رفع الصور) ===
   imgbbApiKey: "53a5a9f8ee5d5c4443be4eb275e54418",
