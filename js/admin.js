@@ -1,7 +1,7 @@
 /* ==========================================================================
    admin.js
    منطق لوحة تحكم الأدمن بالكامل (admin.html). 
-   تم التحديث: دعم خيارات المنتجات المتعددة بالصور + دعم الأقسام الفرعية بشكل دائم.
+   تم التحديث: دعم خيارات المنتجات المتعددة بالصور + حل مشكلة قائمة يتبع لقسم.
    ========================================================================== */
 
 let editingProductId = null;
@@ -1011,6 +1011,32 @@ function wireCategoryModal() {
   }
 }
 
+function populateParentCategorySelect(currentCategoryId, selectedParentId) {
+  const parentSelect = document.getElementById("categoryParentSelect");
+  if (!parentSelect) return;
+
+  const allCats = Store.getCategories() || [];
+  
+  // تصفية الأقسام لتشمل فقط الأقسام الرئيسية وتستبعد القسم الحالي نفسه
+  const mainCats = allCats.filter(function(c) {
+    if (!c || !c.id) return false;
+    if (currentCategoryId && c.id === currentCategoryId) return false;
+    return !c.parentId || c.parentId === "";
+  });
+
+  let optionsHtml = '<option value="">-- قسم رئيسي مستقل --</option>';
+  mainCats.forEach(function(c) {
+    const isSelected = selectedParentId && c.id === selectedParentId;
+    optionsHtml += '<option value="' + escapeHtml(c.id) + '"' + (isSelected ? ' selected' : '') + '>' + escapeHtml(c.name) + '</option>';
+  });
+
+  parentSelect.innerHTML = optionsHtml;
+  
+  // تعطيل القائمة إذا كان القسم الحالي لديه أقسام فرعية بالفعل
+  const hasSubCategories = currentCategoryId && allCats.some(function(cc) { return cc.parentId === currentCategoryId; });
+  parentSelect.disabled = !!hasSubCategories;
+}
+
 function openCategoryModal(categoryId) {
   editingCategoryId = categoryId;
   pendingCategoryImage = null;
@@ -1023,31 +1049,24 @@ function openCategoryModal(categoryId) {
 
   const preview = document.getElementById("categoryImagePreview");
   const nameInput = document.getElementById("categoryName");
-  const parentSelect = document.getElementById("categoryParentSelect");
 
   const allCats = Store.getCategories();
-
-  if (parentSelect) {
-    parentSelect.innerHTML = '<option value="">-- قسم رئيسي مستقل --</option>' +
-      allCats.filter(function(c) { return c.id !== categoryId && !c.parentId; })
-             .map(function(c) { return '<option value="' + escapeHtml(c.id) + '">' + escapeHtml(c.name) + '</option>'; }).join("");
-    
-    parentSelect.disabled = !!(categoryId && allCats.some(function (cc) { return cc.parentId === categoryId; }));
-  }
 
   if (categoryId) {
     const c = allCats.find(function (cc) { return cc.id === categoryId; });
     title.textContent = "تعديل القسم";
-    if (nameInput) nameInput.value = c.name;
-    if (parentSelect) parentSelect.value = c.parentId || "";
-    pendingCategoryImage = c.image || null;
-    if (preview) preview.innerHTML = c.image ? '<img src="' + escapeHtml(c.image) + '">' : iconSvg(c.icon || "box");
-    const radio = form.querySelector('input[name="categoryIcon"][value="' + CSS.escape(String(c.icon || "")) + '"]');
+    if (nameInput && c) nameInput.value = c.name;
+    
+    populateParentCategorySelect(categoryId, c ? c.parentId : "");
+
+    pendingCategoryImage = (c && c.image) ? c.image : null;
+    if (preview) preview.innerHTML = (c && c.image) ? '<img src="' + escapeHtml(c.image) + '">' : iconSvg((c && c.icon) || "box");
+    const radio = form.querySelector('input[name="categoryIcon"][value="' + CSS.escape(String((c && c.icon) || "")) + '"]');
     if (radio) radio.checked = true;
     syncIconPickerActive();
   } else {
     title.textContent = "إضافة قسم جديد";
-    if (parentSelect) parentSelect.value = "";
+    populateParentCategorySelect(null, "");
     if (preview) preview.innerHTML = iconSvg("box");
     const first = form.querySelector('input[name="categoryIcon"]');
     if (first) first.checked = true;
