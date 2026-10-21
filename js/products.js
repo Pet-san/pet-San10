@@ -58,11 +58,6 @@ function renderProductCard(product) {
     }
 
     colorsHtml = '<div class="product-body-colors">' + dots + '</div>';
-  } else {
-    const optionsCount = (product.variants && product.variants.length) || 0;
-    if (optionsCount > 1) {
-      badges.push('<span class="badge badge-variants">' + iconSvg("layers") + optionsCount + ' خيارات</span>');
-    }
   }
 
   const hasOptions = productHasOptions(product);
