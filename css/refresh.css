@@ -66,3 +66,10 @@
 @media(max-width:650px){
   #backToTopBtn{bottom:20px;right:16px}
 }
+/* إخفاء كبسولة الخيارات البيضاء نهائياً ومنع ظهورها */
+.badge-variants,
+.badge.badge-variants {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
