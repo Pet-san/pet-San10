@@ -98,7 +98,7 @@ function showIosInstallModal() {
     <div style="background: #f8fafc; border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; font-size: 0.88rem; line-height: 1.7; color: #334155; border: 1px solid #e2e8f0;">
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
         <span style="background: #e0f2fe; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0369a1; font-size: 0.8rem;">1</span>
-        <span>اضغط على زر المشاركة ${shareIconSvg} في شريط سفاري السفلي.</span>
+        <span>اضغط على زر المشاركة ${shareIconSvg} في الشريط السفلي.</span>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="background: #e0f2fe; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0369a1; font-size: 0.8rem;">2</span>
