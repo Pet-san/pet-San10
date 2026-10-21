@@ -1,7 +1,7 @@
 /* ==========================================================================
    admin.js
    منطق لوحة تحكم الأدمن بالكامل (admin.html). 
-   تم التحديث: دعم خيارات المنتجات المتعددة (النوع/المقاس/اللون) مع صورة خاصة لكل خيار.
+   تم التحديث: دعم خيارات المنتجات المتعددة بالصور + دعم الأقسام الفرعية بشكل دائم.
    ========================================================================== */
 
 let editingProductId = null;
@@ -919,10 +919,15 @@ function renderCategoriesTable() {
     const thumbUrl = (typeof window.getIkUrl === "function" && c.image) ? window.getIkUrl(c.image, 160, 70) : (c.image || "");
     const img = thumbUrl ? '<img src="' + escapeHtml(thumbUrl) + '" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:50%;">' : '<div class="admin-table-icon">' + iconSvg(c.icon || "box") + "</div>";
     
+    const parent = c.parentId ? categories.find(function(x) { return x.id === c.parentId; }) : null;
+    const displayName = parent 
+      ? escapeHtml(c.name) + '<br><small style="color:var(--ink-400);">↳ فرعي من: ' + escapeHtml(parent.name) + '</small>' 
+      : '<strong>' + escapeHtml(c.name) + '</strong>';
+
     return (
       "<tr>" +
         "<td>" + img + "</td>" +
-        "<td><strong>" + escapeHtml(c.name) + "</strong></td>" +
+        "<td>" + displayName + "</td>" +
         "<td>" + count + " منتج</td>" +
         '<td class="row-actions">' +
           '<button class="btn-icon btn-sm" title="تعديل" onclick="openCategoryModal(' + jsStr(c.id) + ')">' + iconSvg("edit") + "</button>" +
@@ -936,6 +941,11 @@ function renderCategoriesTable() {
 function deleteCategoryConfirm(id) {
   const category = Store.getCategories().find(function (c) { return c.id === id; });
   if (!category) return;
+  const childCount = Store.getCategories().filter(function (c) { return c.parentId === id; }).length;
+  if (childCount) {
+    showToast('لا يمكن حذف "' + category.name + '" لأن له ' + childCount + ' قسم فرعي.', "error");
+    return;
+  }
   if (confirm('هل تريد حذف القسم "' + category.name + '"؟')) {
     Store.deleteCategory(id);
     bumpMetaVersion();
@@ -1013,11 +1023,23 @@ function openCategoryModal(categoryId) {
 
   const preview = document.getElementById("categoryImagePreview");
   const nameInput = document.getElementById("categoryName");
+  const parentSelect = document.getElementById("categoryParentSelect");
+
+  const allCats = Store.getCategories();
+
+  if (parentSelect) {
+    parentSelect.innerHTML = '<option value="">-- قسم رئيسي مستقل --</option>' +
+      allCats.filter(function(c) { return c.id !== categoryId && !c.parentId; })
+             .map(function(c) { return '<option value="' + escapeHtml(c.id) + '">' + escapeHtml(c.name) + '</option>'; }).join("");
+    
+    parentSelect.disabled = !!(categoryId && allCats.some(function (cc) { return cc.parentId === categoryId; }));
+  }
 
   if (categoryId) {
-    const c = Store.getCategories().find(function (cc) { return cc.id === categoryId; });
+    const c = allCats.find(function (cc) { return cc.id === categoryId; });
     title.textContent = "تعديل القسم";
-    nameInput.value = c.name;
+    if (nameInput) nameInput.value = c.name;
+    if (parentSelect) parentSelect.value = c.parentId || "";
     pendingCategoryImage = c.image || null;
     if (preview) preview.innerHTML = c.image ? '<img src="' + escapeHtml(c.image) + '">' : iconSvg(c.icon || "box");
     const radio = form.querySelector('input[name="categoryIcon"][value="' + CSS.escape(String(c.icon || "")) + '"]');
@@ -1025,6 +1047,7 @@ function openCategoryModal(categoryId) {
     syncIconPickerActive();
   } else {
     title.textContent = "إضافة قسم جديد";
+    if (parentSelect) parentSelect.value = "";
     if (preview) preview.innerHTML = iconSvg("box");
     const first = form.querySelector('input[name="categoryIcon"]');
     if (first) first.checked = true;
@@ -1042,6 +1065,8 @@ function closeCategoryModal() {
 function saveCategoryForm(e) {
   e.preventDefault();
   const name = document.getElementById("categoryName").value.trim();
+  const parentSelect = document.getElementById("categoryParentSelect");
+  const parentId = parentSelect ? parentSelect.value : "";
   const iconInput = document.querySelector('input[name="categoryIcon"]:checked');
   const existing = editingCategoryId ? Store.getCategories().find(function (c) { return c.id === editingCategoryId; }) : null;
   const icon = iconInput ? iconInput.value : ((existing && existing.icon) || "box");
@@ -1049,10 +1074,10 @@ function saveCategoryForm(e) {
   if (!name) { showToast("يرجى إدخال اسم القسم", "error"); return; }
 
   if (editingCategoryId) {
-    Store.updateCategory(editingCategoryId, { name: name, image: pendingCategoryImage, icon: icon });
+    Store.updateCategory(editingCategoryId, { name: name, image: pendingCategoryImage, icon: icon, parentId: parentId });
     showToast("تم تحديث القسم", "success");
   } else {
-    Store.addCategory({ name: name, image: pendingCategoryImage, icon: icon });
+    Store.addCategory({ name: name, image: pendingCategoryImage, icon: icon, parentId: parentId });
     showToast("تمت إضافة القسم", "success");
   }
 
