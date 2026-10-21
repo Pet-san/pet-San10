@@ -254,7 +254,7 @@
       <div class="field"><label>السعر القديم قبل الخصم (اختياري)</label><input type="number" id="productOldPrice" min="0" placeholder="يظهر مشطوباً بجانب السعر عند تفعيل «عرض خاص»"></div>
       <div class="field"><label>القسم</label><select id="productCategorySelect" required></select></div>
       
-      <!-- ============ خيارات ومواصفات المنتج بتنسيق متناسق وبدون شروحات زائدة ============ -->
+      <!-- خيارات ومواصفات المنتج -->
       <div class="field" style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong);">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <label style="margin: 0; font-weight: 700; font-size: 0.95rem; color: var(--ink-900);">خيارات ومواصفات المنتج</label>
@@ -301,6 +301,13 @@
         </div>
       </div>
       <div class="field"><label>اسم القسم</label><input type="text" id="categoryName" required></div>
+      
+      <!-- حقل القسم الأب لجعله قسماً فرعياً -->
+      <div class="field" id="categoryParentWrap">
+        <label>يتبع لقسم (اختياري — لجعله قسماً فرعياً)</label>
+        <select id="categoryParentSelect" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line-strong); background:#fff; font-family:inherit;"></select>
+      </div>
+
       <div class="field">
         <label>الأيقونة (تظهر عند عدم وجود صورة للقسم)</label>
         <div id="categoryIconPicker" class="icon-picker"></div>
