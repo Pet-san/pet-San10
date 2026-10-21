@@ -4,13 +4,16 @@
    ========================================================================== */
 
 const STORE_CONFIG = {
+  // رقم إصدار البيانات
   dataVersion: 3,
 
+  // اسم المتجر ووصفه
   storeName: "Pet San",
-  storeTagline: "تجربة تسوق بسيطة، واضحة ومباشرة",
-  storeDescription: "متجر إلكتروني يقدم أفضل المنتجات بطلب مباشر عبر واتساب.",
+  storeTagline: "كل ما يحتاجه صديقك الأليف",
+  storeDescription: "متجر إلكتروني يقدم أفضل مستلزمات الحيوانات الأليفة بطلب مباشر عبر واتساب.",
 
-  whatsappNumber: "",
+  // بيانات التواصل (يتم تخصيصها لاحقاً من لوحة التحكم)
+  whatsappNumber: "",    // بصيغة دولية بدون + وبدون مسافات، مثال: 9647xxxxxxxxx
   phone: "",
   instagram: "",
   tiktok: "",
@@ -35,10 +38,10 @@ const STORE_CONFIG = {
   // === Firebase Realtime Database ===
   firebaseDatabaseURL: "https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app",
 
-  // === ImgBB ===
+  // === ImgBB (رفع الصور) ===
   imgbbApiKey: "53a5a9f8ee5d5c4443be4eb275e54418",
 
-  // === ImageKit ===
+  // === ImageKit (تحسين وضغط الصور عبر CDN - بدون سلاش نهائي) ===
   imageKitEndpoint: "https://ik.imagekit.io/petshop",
 
   // === Algolia Search Engine ===
