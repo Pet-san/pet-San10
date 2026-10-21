@@ -37,10 +37,17 @@ function renderProductCard(product) {
   const outOfStock = !Store.isProductAvailable(product);
   const badges = [];
   
-  if (product.isOffer) badges.push('<span class="badge badge-offer">عرض🔥</span>');
-  else if (product.isNew) badges.push('<span class="badge badge-new">جديد</span>');
-  else if (product.featured) badges.push('<span class="badge badge-featured">مميز</span>');
-  if (outOfStock) badges.push('<span class="badge badge-out-abs">غير متوفر</span>');
+  // شارات المنتجات بألوان وتدرجات احترافية
+  if (product.isOffer) {
+    badges.push('<span class="badge badge-offer" style="background:linear-gradient(135deg, #ef4444, #dc2626); color:#fff; box-shadow:0 2px 6px rgba(220,38,38,0.35); font-weight:700;">عرض🔥</span>');
+  } else if (product.isNew) {
+    badges.push('<span class="badge badge-new" style="background:linear-gradient(135deg, #06b6d4, #0284c7); color:#fff; box-shadow:0 2px 6px rgba(2,132,199,0.35); font-weight:700;">جديد</span>');
+  } else if (product.featured) {
+    badges.push('<span class="badge badge-featured" style="background:linear-gradient(135deg, #f59e0b, #d97706); color:#fff; box-shadow:0 2px 6px rgba(217,119,6,0.35); font-weight:700;">مميز</span>');
+  }
+  if (outOfStock) {
+    badges.push('<span class="badge badge-out-abs">غير متوفر</span>');
+  }
 
   let colorsHtml = "";
   if (product.colors && product.colors.length > 0) {
@@ -666,7 +673,6 @@ function renderProductDetail(mount, product) {
 
   document.title = product.name + " — " + (Store.getSettings().storeName || "متجرك الإلكتروني");
 
-  // دعم نظام الخيارات الحديث (Variants) مع دعم التوافق للألوان والمقاسات القديمة
   const hasModernVariants = Array.isArray(product.variants) && product.variants.length > 0 && typeof product.variants[0] === 'object';
   const hasColors = !hasModernVariants && !!(product.colors && product.colors.length);
   const hasSizes = !hasModernVariants && !!(product.sizes && product.sizes.length);
@@ -703,22 +709,22 @@ function renderProductDetail(mount, product) {
     galleryHtml = '<div class="placeholder-icon" style="height: 100%; display: flex; align-items: center; justify-content: center; background: var(--olive-50); border-radius: 16px; min-height:300px;">' + iconSvg(key) + "</div>";
   }
 
-  /* خيارات المنتج الحديثة (النوع / الحجم / المقاس / اللون مع صورها) */
+  /* خيارات المنتج الحديثة مع صورها */
   let modernVariantsHtml = "";
   if (hasModernVariants) {
     modernVariantsHtml = `
-      <div class="field" style="margin-bottom: 20px;">
-        <label style="display:block; margin-bottom:10px; font-weight:700; color:var(--ink-800);">الخيارات المتاحة:</label>
-        <div id="modernVariantsWrap" style="display: flex; flex-wrap: wrap; gap: 10px;">
+      <div class="field" style="margin-bottom: 16px; margin-top: 10px;">
+        <label style="display:block; margin-bottom:8px; font-weight:700; color:var(--ink-800); font-size:0.95rem;">الخيارات المتاحة:</label>
+        <div id="modernVariantsWrap" style="display: flex; flex-wrap: wrap; gap: 8px;">
           ${product.variants.map((v, i) => {
-            const thumbImg = v.image ? `<img src="${escapeHtml(window.getIkUrl ? window.getIkUrl(v.image, 100, 80) : v.image)}" style="width:26px; height:26px; border-radius:6px; object-fit:cover; margin-inline-end:6px;">` : '';
+            const thumbImg = v.image ? `<img src="${escapeHtml(window.getIkUrl ? window.getIkUrl(v.image, 100, 80) : v.image)}" style="width:24px; height:24px; border-radius:6px; object-fit:cover; margin-inline-end:6px;">` : '';
             return `
               <button type="button" 
                       class="variant-chip ${i === 0 ? 'is-selected' : ''}" 
                       data-variant-name="${escapeHtml(v.name)}" 
                       data-variant-img="${escapeHtml(v.image || '')}"
                       data-variant-stock="${Number(v.stock) || 0}"
-                      style="display:inline-flex; align-items:center; padding:8px 14px; border-radius:999px; border:1px solid ${i === 0 ? 'var(--primary)' : 'var(--line-strong)'}; background:${i === 0 ? 'var(--olive-50)' : '#fff'}; color:${i === 0 ? 'var(--primary)' : 'var(--ink-800)'}; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s ease;">
+                      style="display:inline-flex; align-items:center; padding:7px 14px; border-radius:999px; border:1px solid ${i === 0 ? 'var(--primary)' : 'var(--line-strong)'}; background:${i === 0 ? 'var(--olive-50)' : '#fff'}; color:${i === 0 ? 'var(--primary)' : 'var(--ink-800)'}; font-weight:600; cursor:pointer; font-family:inherit; font-size:0.9rem; transition:all 0.2s ease;">
                 ${thumbImg}
                 <span>${escapeHtml(v.name)}</span>
               </button>
@@ -799,14 +805,18 @@ function renderProductDetail(mount, product) {
         "<h1>" + escapeHtml(product.name) + "</h1>" +
         '<div class="stock-line" id="stockLine"><span class="dot' + (initiallyOutOfStock ? " dot-out" : "") + '"></span><span id="stockLineText">' + (initiallyOutOfStock ? "غير متوفر حاليًا" : "متوفر حاليًا") + "</span></div>" +
         '<div class="detail-price">' + priceHtml(product) + "</div>" +
-        '<div id="descWrapper" style="position:relative; overflow:hidden; max-height:80px; transition: max-height 0.4s ease;">' +
+        
+        /* وضع الخيارات المتاحة هنا مباشرة أمام نظر الزبون قبل الوصف */
+        modernVariantsHtml +
+        sizesHtml +
+        legacyVariantsHtml +
+
+        '<div id="descWrapper" style="position:relative; overflow:hidden; max-height:80px; transition: max-height 0.4s ease; margin-top:14px;">' +
           '<p style="margin:0; white-space: pre-wrap;">' + escapeHtml(product.description || "") + '</p>' +
           '<div id="descFade" style="position:absolute; bottom:0; left:0; right:0; height:40px; background:linear-gradient(transparent, var(--cream));"></div>' +
         '</div>' +
         '<button id="descToggle" style="background:none; border:none; color:var(--olive-700); font-weight:700; font-size:0.9rem; padding:4px 0; margin-bottom:12px; cursor:pointer;">قراءة المزيد ↓</button>' +
-        modernVariantsHtml +
-        sizesHtml +
-        legacyVariantsHtml +
+        
         '<div class="qty-stepper" id="qtyStepperWrap" style="' + (initiallyOutOfStock ? "display:none;" : "") + '"><button type="button" id="qtyMinus">−</button><input type="number" id="qtyInput" value="1" min="1" max="' + Math.max(initialStock, 1) + '"><button type="button" id="qtyPlus">+</button></div>' +
         '<div class="detail-actions" id="detailActions">' +
           (initiallyOutOfStock
