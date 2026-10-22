@@ -272,7 +272,7 @@ svg[stroke="currentColor"]{stroke-linecap:round;stroke-linejoin:round;stroke-wid
 .badge-new{background:var(--secondary);border-color:var(--secondary);color:#fff}
 .badge-featured{background:var(--accent);border-color:var(--accent);color:var(--primary)}
 .badge-out-abs{inset-inline-start:auto;inset-inline-end:10px;background:var(--ink-800);border-color:var(--ink-800);color:#fff}
-.badge-variants { display: none !important;}
+.badge-variants{display:none !important}
 .badge-variants svg{width:11px;height:11px;vertical-align:-2px;margin-inline-end:3px}
 /* unavailable products: muted image + muted title, add-to-cart is disabled by the renderer */
 .product-card:has(.badge-out-abs) .product-media>img{filter:grayscale(.9);opacity:.55}
@@ -445,9 +445,10 @@ svg[stroke="currentColor"]{stroke-linecap:round;stroke-linejoin:round;stroke-wid
 .qty-stepper button{width:44px;height:46px;border:0;background:var(--surface);color:var(--primary);font-size:1.25rem;transition:background-color .18s ease}
 .qty-stepper button:hover{background:var(--secondary-50)}
 .qty-stepper input{width:52px;height:46px;border:0;border-inline:1px solid var(--border);text-align:center;font-size:16px;color:var(--primary);font-weight:600;outline:none;background:var(--surface)}
-/* product.html builds a few controls with inline styles; harmonise them with the theme */
-#dropdownBtn{border-radius:var(--r-ctl)!important;border-color:var(--border-strong)!important;color:var(--text)!important}
-#dropdownList{border-radius:var(--r-ctl)!important;box-shadow:var(--shadow-card);overflow:hidden}
+/* Custom dropdown styling using design system tokens */
+#dropdownBtn{width:100%;min-height:48px;padding:10px 16px;border-radius:var(--r-ctl)!important;border:1.5px solid var(--border-strong)!important;background:var(--surface)!important;font-family:var(--font-body);font-size:.95rem;font-weight:600;color:var(--text)!important;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:right;transition:border-color .18s ease,box-shadow .18s ease}
+#dropdownBtn:hover,#dropdownBtn:focus-visible{border-color:var(--secondary)!important;box-shadow:var(--ring)}
+#dropdownList{background:var(--surface)!important;border:1px solid var(--border)!important;border-radius:var(--r-ctl)!important;box-shadow:var(--shadow-lift)!important;overflow:hidden;max-height:220px;overflow-y:auto}
 #descToggle{color:var(--secondary)!important}
 #descFade{height:28px!important}
 
