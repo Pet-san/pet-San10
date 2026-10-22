@@ -58,11 +58,6 @@ function renderProductCard(product) {
     }
 
     colorsHtml = '<div class="product-body-colors">' + dots + '</div>';
-  } else {
-    const optionsCount = (product.variants && product.variants.length) || 0;
-    if (optionsCount > 1) {
-      badges.push('<span class="badge badge-variants">' + iconSvg("layers") + optionsCount + ' خيارات</span>');
-    }
   }
 
   const hasOptions = productHasOptions(product);
@@ -703,7 +698,7 @@ function renderProductDetail(mount, product) {
   } else {
     const cat = Store.getCategories().find(function (c) { return c.id === product.categoryId; });
     const key = cat ? cat.icon : "box";
-    galleryHtml = '<div class="placeholder-icon" style="height: 100%; display: flex; align-items: center; justify-content: center; background: var(--olive-50); border-radius: 16px; min-height:300px;">' + iconSvg(key) + "</div>";
+    galleryHtml = '<div class="placeholder-icon" style="height: 100%; display: flex; align-items: center; justify-content: center; background: var(--surface-2); border-radius: var(--r-card); min-height:300px;">' + iconSvg(key) + "</div>";
   }
 
   let colorsHtml = "";
@@ -711,14 +706,14 @@ function renderProductDetail(mount, product) {
     colorsHtml =
       '<div class="detail-media-colors" style="margin-top:24px; padding:4px 0;">' +
         '<div class="color-head" style="margin-bottom:12px; font-size:.95rem;">' +
-          '<span class="color-label" style="color:var(--ink-500);">اللون:</span> ' +
-          '<strong id="selectedColorLabel" class="color-name" style="color:var(--olive-900); font-weight:700;">' + escapeHtml(product.colors[0] ? product.colors[0].name : "") + '</strong>' +
+          '<span class="color-label" style="color:var(--text-2);">اللون:</span> ' +
+          '<strong id="selectedColorLabel" class="color-name" style="color:var(--primary); font-weight:700;">' + escapeHtml(product.colors[0] ? product.colors[0].name : "") + '</strong>' +
         '</div>' +
         '<div id="colorSwatches" class="color-swatches-wrap" style="display:flex; flex-wrap:wrap; gap:16px; align-items:center;">' +
           product.colors.map(function (c, i) {
             const bg = c.hex || "#ccc";
             return '<button type="button" class="color-swatch' + (i === 0 ? " is-selected" : "") + '" data-color="' + escapeHtml(c.name) + '" title="' + escapeHtml(c.name) + '" ' +
-              'style="background:' + escapeHtml(bg) + '; width:42px; height:42px; border-radius:50%; border:2px solid #fff; padding:0; cursor:pointer; flex-shrink:0;"></button>';
+              'style="background:' + escapeHtml(bg) + '; width:42px; height:42px; border-radius:50%; border:2px solid var(--surface); padding:0; cursor:pointer; flex-shrink:0;"></button>';
           }).join('') +
         '</div>' +
       '</div>';
@@ -728,7 +723,7 @@ function renderProductDetail(mount, product) {
   if (hasSizes) {
     sizesHtml =
       '<div class="field" style="margin-bottom:16px;">' +
-        '<label style="display:block;margin-bottom:8px;font-weight:600;">الحجم:</label>' +
+        '<label style="display:block;margin-bottom:8px;font-weight:600;color:var(--text);">الحجم / القياس:</label>' +
         '<div id="sizeButtons" style="display:flex;flex-wrap:wrap;gap:8px;">' +
           product.sizes.map(function (sz, i) {
             return '<button type="button" class="size-btn' + (i === 0 ? " is-selected" : "") + '" data-size="' + escapeHtml(sz) + '">' + escapeHtml(sz) + '</button>';
@@ -739,17 +734,27 @@ function renderProductDetail(mount, product) {
 
   let legacyVariantsHtml = "";
   if (hasLegacyVariants) {
+      const getVariantLabel = (v) => {
+        if (typeof v === "object" && v !== null) {
+          return v.name || v.label || v.title || Object.values(v)[0] || "";
+        }
+        return String(v || "");
+      };
+
+      const firstVariantLabel = getVariantLabel(product.variants[0]);
+
       legacyVariantsHtml =
         '<div class="field" style="margin-bottom:20px;">' +
-          '<label class="variant-label" style="display:block;margin-bottom:8px;font-weight:600;">الخيارات المتوفرة:</label>' +
-          '<div id="customDropdown" style="position:relative;">' +
-            '<button type="button" id="dropdownBtn" style="width:100%;padding:12px 16px;border-radius:var(--radius-sm);border:1px solid var(--line-strong);background:var(--white);font-family:var(--font-body);font-size:1rem;color:var(--ink-900);cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:right;">' +
-              '<span id="dropdownSelected">' + escapeHtml(product.variants[0]) + '</span>' +
-              '<span id="dropdownArrow" style="transition:transform 0.3s;">&#9660;</span>' +
+          '<label class="variant-label" style="display:block;margin-bottom:8px;font-weight:600;color:var(--text);">الخيارات المتوفرة:</label>' +
+          '<div id="customDropdown" style="position:relative;width:100%;">' +
+            '<button type="button" id="dropdownBtn" style="width:100%;min-height:48px;padding:10px 16px;border-radius:var(--r-ctl);border:1.5px solid var(--border-strong);background:var(--surface);font-family:var(--font-body);font-size:0.95rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:right;transition:border-color .18s ease,box-shadow .18s ease;">' +
+              '<span id="dropdownSelected">' + escapeHtml(firstVariantLabel) + '</span>' +
+              '<span id="dropdownArrow" style="transition:transform 0.25s ease;display:inline-flex;color:var(--text-2);">&#9660;</span>' +
             '</button>' +
-            '<ul id="dropdownList" style="display:none;position:absolute;top:calc(100% + 4px);right:0;left:0;background:var(--white);border:1px solid var(--line-strong);border-radius:var(--radius-sm);z-index:999;list-style:none;margin:0;padding:0;box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:220px;overflow-y:auto;">' +
+            '<ul id="dropdownList" style="display:none;position:absolute;top:calc(100% + 6px);right:0;left:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-ctl);z-index:999;list-style:none;margin:0;padding:0;box-shadow:var(--shadow-lift);max-height:220px;overflow-y:auto;">' +
               product.variants.map(function (v, i) {
-                return '<li data-variant="' + escapeHtml(v) + '" style="padding:12px 16px;cursor:pointer;font-family:var(--font-body);font-size:1rem;color:var(--ink-900);border-bottom:1px solid var(--line-soft);text-align:right;' + (i === 0 ? 'font-weight:700;' : '') + '">' + escapeHtml(v) + '</li>';
+                const label = getVariantLabel(v);
+                return '<li data-variant="' + escapeHtml(label) + '" style="padding:12px 16px;cursor:pointer;font-family:var(--font-body);font-size:0.92rem;font-weight:600;color:var(--text);border-bottom:1px solid var(--border-soft);text-align:right;transition:background-color .15s ease,color .15s ease;' + (i === 0 ? 'background:var(--secondary-50);color:var(--primary);' : '') + '">' + escapeHtml(label) + '</li>';
               }).join('') +
             '</ul>' +
           '</div>' +
@@ -774,10 +779,10 @@ function renderProductDetail(mount, product) {
         '<div class="stock-line" id="stockLine"><span class="dot' + (initiallyOutOfStock ? " dot-out" : "") + '"></span><span id="stockLineText">' + (initiallyOutOfStock ? "غير متوفر حاليًا" : "متوفر حاليًا") + "</span></div>" +
         '<div class="detail-price">' + priceHtml(product) + "</div>" +
         '<div id="descWrapper" style="position:relative; overflow:hidden; max-height:80px; transition: max-height 0.4s ease;">' +
-          '<p style="margin:0; white-space: pre-wrap;">' + escapeHtml(product.description || "") + '</p>' +
-          '<div id="descFade" style="position:absolute; bottom:0; left:0; right:0; height:40px; background:linear-gradient(transparent, var(--cream));"></div>' +
+          '<p style="margin:0; white-space: pre-wrap; color:var(--text);">' + escapeHtml(product.description || "") + '</p>' +
+          '<div id="descFade" style="position:absolute; bottom:0; left:0; right:0; height:40px; background:linear-gradient(transparent, var(--bg));"></div>' +
         '</div>' +
-        '<button id="descToggle" style="background:none; border:none; color:var(--olive-700); font-weight:700; font-size:0.9rem; padding:4px 0; margin-bottom:12px; cursor:pointer;">قراءة المزيد ↓</button>' +
+        '<button id="descToggle" style="background:none; border:none; color:var(--secondary); font-weight:700; font-size:0.9rem; padding:4px 0; margin-bottom:12px; cursor:pointer;">قراءة المزيد ↓</button>' +
         sizesHtml +
         legacyVariantsHtml +
         '<div class="qty-stepper" id="qtyStepperWrap" style="' + (initiallyOutOfStock ? "display:none;" : "") + '"><button type="button" id="qtyMinus">−</button><input type="number" id="qtyInput" value="1" min="1" max="' + Math.max(initialStock, 1) + '"><button type="button" id="qtyPlus">+</button></div>' +
@@ -807,9 +812,16 @@ function renderProductDetail(mount, product) {
       });
   }
 
+  const getVariantLabel = (v) => {
+    if (typeof v === "object" && v !== null) {
+      return v.name || v.label || v.title || Object.values(v)[0] || "";
+    }
+    return String(v || "");
+  };
+
   let selectedColor = hasColors ? product.colors[0].name : null;
   let selectedSize = hasSizes ? product.sizes[0] : null;
-  let selectedVariant = hasLegacyVariants ? product.variants[0] : null;
+  let selectedVariant = hasLegacyVariants ? getVariantLabel(product.variants[0]) : null;
 
   function updateSmartSizesAvailability() {
     if (!hasSizes) return;
@@ -954,24 +966,39 @@ function renderProductDetail(mount, product) {
   const dropdownSelected = document.getElementById("dropdownSelected");
   const dropdownArrow = document.getElementById("dropdownArrow");
 
-  if (customDropdown && dropdownBtn) {
+  if (customDropdown && dropdownBtn && dropdownList) {
     dropdownBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       const isOpen = dropdownList.style.display === "block";
       dropdownList.style.display = isOpen ? "none" : "block";
-      dropdownArrow.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+      if (dropdownArrow) dropdownArrow.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
     });
 
     dropdownList.querySelectorAll("li").forEach(function (li) {
-      li.addEventListener("mouseover", function () { li.style.background = "var(--cream)"; });
-      li.addEventListener("mouseout", function () { li.style.background = ""; });
+      li.addEventListener("mouseover", function () {
+        if (li.dataset.variant !== selectedVariant) {
+          li.style.background = "var(--secondary-50)";
+          li.style.color = "var(--primary)";
+        }
+      });
+      li.addEventListener("mouseout", function () {
+        if (li.dataset.variant !== selectedVariant) {
+          li.style.background = "transparent";
+          li.style.color = "var(--text)";
+        }
+      });
       li.addEventListener("click", function () {
         selectedVariant = li.dataset.variant;
-        dropdownSelected.textContent = selectedVariant;
+        if (dropdownSelected) dropdownSelected.textContent = selectedVariant;
         dropdownList.style.display = "none";
-        dropdownArrow.style.transform = "rotate(0deg)";
-        dropdownList.querySelectorAll("li").forEach(function (el) { el.style.fontWeight = ""; });
-        li.style.fontWeight = "700";
+        if (dropdownArrow) dropdownArrow.style.transform = "rotate(0deg)";
+        
+        dropdownList.querySelectorAll("li").forEach(function (el) {
+          el.style.background = "transparent";
+          el.style.color = "var(--text)";
+        });
+        li.style.background = "var(--secondary-50)";
+        li.style.color = "var(--primary)";
         
         if (mainImage && product.variantImages && product.variantImages[selectedVariant]) {
             mainImage.src = window.getIkUrl(product.variantImages[selectedVariant], 1000, 85);
