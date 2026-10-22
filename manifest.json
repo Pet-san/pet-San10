@@ -1,34 +1,26 @@
 {
-  "name": "Pet San | مستلزمات حيوانات أليفة",
-  "short_name": "Pet San",
-  "description": "كل ما يحتاجه صديقك الأليف",
-  "id": "/?source=pwa",
-  "start_url": "/?source=pwa",
-  "scope": "/",
+  "name": "متجر الحيوانات الأليفة",
+  "short_name": "المتجر",
+  "description": "تسوق مستلزمات واحتياجات الحيوانات الأليفة بكل سهولة",
+  "start_url": "index.html",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#F8FAFC",
+  "background_color": "#ffffff",
   "theme_color": "#172554",
+  "orientation": "portrait-primary",
   "dir": "rtl",
   "lang": "ar",
   "icons": [
     {
-      "src": "/assets/logo/logo.png?v=85",
+      "src": "assets/logo/logo.png?v=78",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "/assets/logo/logo.png?v=85",
+      "src": "assets/logo/logo.png?v=78",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/logo/logo.png?v=85",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
