@@ -801,7 +801,7 @@ function renderInventoryGrid() {
     });
   });
 
-  if (stockLabel) stockLabel.textContent = "إجمالي المخزون (محسوب تلقائيًا من الألوان/المقاسات)";
+  if (stockLabel) stockLabel.textContent = "إجمالي المخزون (محسوب تلقائيًا من الألوان/الانواع)";
   if (stockInput) stockInput.readOnly = true;
   updateComputedStock();
 }
