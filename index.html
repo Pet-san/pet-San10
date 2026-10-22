@@ -336,7 +336,6 @@
       paintSectionIfChanged(sec, cached, false);
     }
 
-    // الاعتماد على الفهرس المحلي فوراً إذا كان موجوداً لمنع أي استعلامات سيرفر إضافية
     if (typeof Store.hasIndexLocal === "function" && Store.hasIndexLocal()) {
       var idxList = getSectionFromIndex(sec.field);
       if (idxList && idxList.length) {
@@ -396,7 +395,7 @@
     }
     el.innerHTML = cats.map(function (c) {
       var media = c.image
-        ? '<img src="' + escapeHtml(window.getIkUrl(c.image, 160, 70)) + '" alt="" width="80" height="80" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;background:var(--surface-2);">'
+        ? '<img src="' + escapeHtml(window.getIkUrl(c.image, 200, 75)) + '" alt="" width="98" height="98" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;background:var(--surface-2);">'
         : iconSvg(c.icon || "box");
       return '<a href="products.html?cat=' + encodeURIComponent(c.id) + '" class="cat-chip"><span class="cat-icon" style="padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">' + media + '</span><span class="name">' + escapeHtml(c.name) + "</span></a>";
     }).join("");
