@@ -269,8 +269,7 @@ svg[stroke="currentColor"]{stroke-linecap:round;stroke-linejoin:round;stroke-wid
 .badge{position:absolute;inset-block-start:10px;inset-inline-start:10px;z-index:2;padding:2px 10px;border-radius:var(--radius-pill);font-size:.7rem;font-weight:700;line-height:1.7;background:var(--surface);color:var(--primary);border:1px solid var(--border);box-shadow:var(--shadow-soft)}
 .badge-offer{background:var(--error);border-color:var(--error);color:#fff}
 .badge-new{background:var(--secondary);border-color:var(--secondary);color:#fff}
-.badge-featured{background:#ffffff !important;border-color:var(--border-strong) !important;color:var(--text) !important;box-shadow:0 2px 6px rgba(0,0,0,.08) !important}
-.badge-out-abs{inset-inline-start:auto;inset-inline-end:10px;background:var(--ink-800);border-color:var(--ink-800);color:#fff}
+.badge-featured{background:var(--accent);border-color:var(--accent);color:#ffffff !important}.badge-out-abs{inset-inline-start:auto;inset-inline-end:10px;background:var(--ink-800);border-color:var(--ink-800);color:#fff}
 .badge-variants{display:none !important}
 .badge-variants svg{width:11px;height:11px;vertical-align:-2px;margin-inline-end:3px}
 /* unavailable products: muted image + muted title, add-to-cart is disabled by the renderer */
