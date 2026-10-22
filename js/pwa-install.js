@@ -37,19 +37,42 @@
       '</div>';
     document.body.appendChild(banner);
 
-    // 2. نافذة تعليمات iOS
+    // 2. نافذة تعليمات iOS بالتنسيق المحسّن
     var iosModal = document.createElement('div');
     iosModal.className = 'ios-install-modal';
     iosModal.id = 'iosInstallModal';
     iosModal.innerHTML = 
       '<div class="ios-modal-card">' +
-        '<h3 style="margin-top:0;">تثبيت المتجر على الآيفون</h3>' +
-        '<p style="color:var(--text-2); font-size:0.86rem; margin-bottom:12px;">قم بإضافة الموقع إلى الشاشة الرئيسية ليعمل كتطبيق مستقل:</p>' +
-        '<ul class="ios-steps">' +
-          '<li><span class="step-num">1</span> اضغط على زر المشاركة أسفل المتصفح <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></li>' +
-          '<li><span class="step-num">2</span> مرر للأسفل واختر <strong>"إضافة إلى الشاشة الرئيسية"</strong> (Add to Home Screen).</li>' +
-          '<li><span class="step-num">3</span> اضغط على <strong>"إضافة"</strong> في أعلى الشاشة.</li>' +
-        '</ul>' +
+        '<h3>تثبيت التطبيق على الآيفون</h3>' +
+        '<p class="ios-subtitle">أضف المتجر لشاشتك الرئيسية لتصفح وطلب أسرع:</p>' +
+        '<div class="ios-steps">' +
+          '<div class="ios-step-item">' +
+            '<span class="ios-step-num">1</span>' +
+            '<div class="ios-step-text">' +
+              'اضغط على زر المشاركة' +
+              '<span class="ios-inline-icon">' +
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                  '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>' +
+                  '<polyline points="16 6 12 2 8 6"></polyline>' +
+                  '<line x1="12" y1="2" x2="12" y2="15"></line>' +
+                '</svg>' +
+              '</span>' +
+              'في شريط المتصفح بالأسفل.' +
+            '</div>' +
+          '</div>' +
+          '<div class="ios-step-item">' +
+            '<span class="ios-step-num">2</span>' +
+            '<div class="ios-step-text">' +
+              'مرر للأسفل واختر <strong>إضافة إلى الشاشة الرئيسية</strong>.' +
+            '</div>' +
+          '</div>' +
+          '<div class="ios-step-item">' +
+            '<span class="ios-step-num">3</span>' +
+            '<div class="ios-step-text">' +
+              'اضغط على <strong>إضافة (Add)</strong> في الزاوية العلوية.' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
         '<button type="button" class="btn btn-primary btn-block" id="iosCloseModal">فهمت ذلك</button>' +
       '</div>';
     document.body.appendChild(iosModal);
