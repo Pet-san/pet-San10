@@ -272,7 +272,7 @@ svg[stroke="currentColor"]{stroke-linecap:round;stroke-linejoin:round;stroke-wid
 .badge-new{background:var(--secondary);border-color:var(--secondary);color:#fff}
 .badge-featured{background:var(--accent);border-color:var(--accent);color:var(--primary)}
 .badge-out-abs{inset-inline-start:auto;inset-inline-end:10px;background:var(--ink-800);border-color:var(--ink-800);color:#fff}
-.badge-variants{inset-block-start:auto;inset-block-end:10px;inset-inline-start:10px;background:rgba(255,255,255,.95);color:var(--ink-700)}
+.badge-variants { display: none !important;}
 .badge-variants svg{width:11px;height:11px;vertical-align:-2px;margin-inline-end:3px}
 /* unavailable products: muted image + muted title, add-to-cart is disabled by the renderer */
 .product-card:has(.badge-out-abs) .product-media>img{filter:grayscale(.9);opacity:.55}
