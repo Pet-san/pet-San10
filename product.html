@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تفاصيل المنتج | {{storeName}}</title>
-<link rel="stylesheet" href="css/style.css?v=77">
+  <link rel="stylesheet" href="css/style.css?v=77">
   <link rel="stylesheet" href="css/refresh.css?v=77">
   <script src="js/config.js?v=77"></script>
   <script src="js/boot.js?v=77"></script>
@@ -20,8 +20,18 @@
     </div>
   </section>
 
-  <section class="section" style="padding-top:10px;">
+  <section class="section" style="padding-top:14px;">
     <div class="container">
+      <!-- زر الرجوع للوراء -->
+      <div style="margin-bottom: 18px;">
+        <button type="button" class="btn-back" onclick="history.back()" title="رجوع للصفحة السابقة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <span>رجوع</span>
+        </button>
+      </div>
+
       <div id="productDetail"></div>
     </div>
   </section>
