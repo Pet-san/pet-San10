@@ -28,8 +28,8 @@ function jsStr(value) {
 /* صورة بديلة مضمّنة (SVG بلا أي طلب شبكة) تُعرض عند فشل الصورة نهائياً */
 window.IMG_PLACEHOLDER = "data:image/svg+xml," + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">' +
-  '<rect width="600" height="600" fill="#EEF1E6"/>' +
-  '<g fill="none" stroke="#B5BDA2" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">' +
+  '<rect width="600" height="600" fill="#f3f4f6"/>' +
+  '<g fill="none" stroke="#b9bec9" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">' +
   '<path d="M300 190 390 240V345L300 395 210 345V240Z"/><path d="M210 240 300 290 390 240M300 290V395"/></g></svg>'
 );
 
@@ -138,6 +138,11 @@ function initSidebarDOM() {
   }
 }
 
+function storeLogoSrc() {
+  var c = (typeof STORE_CONFIG !== "undefined" && STORE_CONFIG) || {};
+  return (c.logo || "assets/logo/logo.png") + (c.assetVersion ? "?v=" + encodeURIComponent(c.assetVersion) : "");
+}
+
 function renderHeader() {
   const mount = document.getElementById("site-header");
   if (!mount || mount.dataset.ready === "1") return;
@@ -161,7 +166,7 @@ function renderHeader() {
     '<header class="site-header">' +
       '<div class="container header-inner">' +
         '<a href="index.html" class="brand" aria-label="' + safeName + '">' +
-          '<img src="assets/logo/logo.png?v=78" alt="' + safeName + '" width="44" height="44" decoding="async">' +
+          '<img src="' + storeLogoSrc() + '" alt="' + safeName + '" width="44" height="44" decoding="async">' +
           '<span class="brand-name">' + safeName + '<span>' + safeTagline + '</span></span>' +
         '</a>' +
         '<nav class="main-nav" id="mainNav" aria-label="التنقل الرئيسي">' + navHtml + '</nav>' +
@@ -350,6 +355,20 @@ function initGlobalSearch() {
   }
 }
 
+/* سطر حقوق المطوّر في الفوتر — يُدار بالكامل من STORE_CONFIG.credit */
+function buildCreditHtml() {
+  var c = (typeof STORE_CONFIG !== "undefined" && STORE_CONFIG && STORE_CONFIG.credit) || null;
+  if (!c || c.show === false) return "";
+  var linkStyle = 'style="color: var(--on-primary-soft); text-decoration: underline;"';
+  var dot = '<span style="opacity: 0.35;">•</span>';
+  var parts = [];
+  if (c.name) parts.push('<span>برمجة وتصميم: <strong style="color: var(--on-primary);">' + escapeHtml(c.name) + '</strong></span>');
+  if (c.instagram) parts.push('<a href="' + escapeHtml(safeUrl(c.instagram)) + '" target="_blank" rel="noopener" ' + linkStyle + '>انستغرام: ' + escapeHtml(c.instagramLabel || "") + '</a>');
+  if (c.phone) parts.push('<a href="tel:' + escapeHtml(String(c.phone).replace(/[^0-9+]/g, "")) + '" dir="ltr" ' + linkStyle + '>' + escapeHtml(c.phone) + '</a>');
+  if (!parts.length) return "";
+  return '<div style="display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;">' + parts.join(dot) + '</div>';
+}
+
 function renderFooter() {
   const footerMount = document.getElementById("site-footer");
   if (!footerMount) return;
@@ -372,7 +391,7 @@ function renderFooter() {
       '<div class="container">' +
         '<div class="footer-grid">' +
           '<div>' +
-            '<div class="footer-brand"><img src="assets/logo/logo.png?v=78" alt="' + settings.storeName + '" width="44" height="44" loading="lazy" decoding="async"><strong>' + settings.storeName + '</strong></div>' +
+            '<div class="footer-brand"><img src="' + storeLogoSrc() + '" alt="' + settings.storeName + '" width="44" height="44" loading="lazy" decoding="async"><strong>' + settings.storeName + '</strong></div>' +
             '<p>' + settings.storeDescription + '</p>' +
           '</div>' +
           '<div><h4>روابط سريعة</h4><ul>' +
@@ -388,15 +407,9 @@ function renderFooter() {
             (settings.address ? '<li>' + (settings.mapUrl ? '<a href="' + settings.mapUrl + '" target="_blank" rel="noopener">' + settings.address + '</a>' : settings.address) + '</li>' : '') +
           '</ul></div>' +
         '</div>' +
-        '<div class="footer-bottom" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 0.82rem; color: rgba(255,255,255,0.6); display: flex; flex-direction: column; gap: 6px; align-items: center;">' +
+        '<div class="footer-bottom" style="margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(var(--on-primary-rgb),0.08); text-align: center; font-size: 0.82rem; color: var(--on-primary-dim); display: flex; flex-direction: column; gap: 6px; align-items: center;">' +
           '<div>© ' + new Date().getFullYear() + ' ' + settings.storeName + ' — جميع الحقوق محفوظة.</div>' +
-          '<div style="display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap;">' +
-            '<span>برمجة وتصميم: <strong style="color: #fff;">م. أمير أحمد</strong></span>' +
-            '<span style="opacity: 0.35;">•</span>' +
-            '<a href="https://instagram.com/az_6ui" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.85); text-decoration: underline;">انستغرام: @az_6ui</a>' +
-            '<span style="opacity: 0.35;">•</span>' +
-            '<a href="tel:07813623682" dir="ltr" style="color: rgba(255,255,255,0.85); text-decoration: underline;">07813623682</a>' +
-          '</div>' +
+          buildCreditHtml() +
         '</div>' +
       '</div>' +
     '</footer>';

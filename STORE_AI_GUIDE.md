@@ -3,9 +3,9 @@
 > **إلى الذكاء الاصطناعي الذي يقرأ هذا الملف:** هذا الملف يصف المشروع كاملاً (الهيكلة، البيانات، الربط بالخدمات، طرق التعديل، وحل المشاكل).
 > اعتمد عليه بدل طلب الملفات. إذا طلبت تعديلاً فاذكر اسم الملف والدالة بالضبط (كلها موثقة هنا).
 > **لا تضع مفاتيح حقيقية في أي رد.** كل المفاتيح في هذا الدليل أمثلة (`YOUR_...`).
-> **آخر تحديث:** 2026-10-19 — مطابق لنسخة `test3-main` الحالية (كل روابط CSS/JS `?v=77` في **كل** الصفحات). يشمل: فحص `ws_meta_v` و`ws_index/v` كل **20 ثانية** (بدل كاش 30 دقيقة القديم)، السعر القديم، الهاتف الثاني ورابط الخرائط، وإصلاح بطء لوحة الأدمن في قسم المنتجات (**القسم 20**). الأصناف والدوال في الملحق (القسم 16) مستخرجة من الكود الفعلي. ⚠️ **المتجر يحتاج قاعدتين في Firebase Rules: `ws_index` و`ws_meta_v` (القسم 9)**، وإلا يعمل بالطريقة الأثقل ويستهلك Firebase أكثر.
+> **آخر تحديث:** 2026-10-21 — **توحيد الإعدادات:** كل ما يخص متجراً بعينه (هويته، الشعار، Firebase، ImgBB، ImageKit، Google Analytics، Algolia، الأدمن، **الثيم والألوان والخط**، SEO، سطر المطوّر) صار في **ملف واحد: `js/config.js`**، ويطبّقه المحرّك الجديد `js/boot.js` على كل الصفحات. **لتسليم القالب لمتجر جديد اقرأ القسم 0-ب فقط.** النسخة الأساسية: `test3-main` (كل روابط CSS/JS `?v=77` في **كل** الصفحات). يشمل: فحص `ws_meta_v` و`ws_index/v` كل **20 ثانية** (بدل كاش 30 دقيقة القديم)، السعر القديم، الهاتف الثاني ورابط الخرائط، وإصلاح بطء لوحة الأدمن في قسم المنتجات (**القسم 20**). الأصناف والدوال في الملحق (القسم 16) مستخرجة من الكود الفعلي. ⚠️ **المتجر يحتاج قاعدتين في Firebase Rules: `ws_index` و`ws_meta_v` (القسم 9)**، وإلا يعمل بالطريقة الأثقل ويستهلك Firebase أكثر.
 > ما تغيّر في المراجعة الأخيرة مذكور في **القسم 18**، وما بقي مفتوحاً في **القسم 15**.
-> للتعديلات البصرية اقرأ **القسم 5-ب (نظام التصميم)** أولاً.
+> للتعديلات البصرية اقرأ **القسم 5-ب (نظام التصميم)** أولاً. **لا تكتب أي قيمة خاصة بمتجر داخل HTML/CSS/JS — مكانها `js/config.js` حصراً (القاعدة 20 في القسم 13).**
 
 ---
 
@@ -24,9 +24,83 @@
 | تخزين محلي | `localStorage` كـ كاش لكل شيء + السلة |
 | الاستضافة | أي استضافة ملفات ثابتة (Cloudflare Pages / Vercel / Netlify / GitHub Pages). الملف `_headers` خاص بـ Cloudflare Pages/Netlify |
 | الدفع الإلكتروني | غير موجود (الدفع عند الاستلام عبر التواصل بواتساب) |
-| الاختبارات | `node tests/run-tests.js` (بلا اعتماديات، لا تُنشر ولا تُحمَّل من أي صفحة) |
+| ملف إعدادات المتجر | **`js/config.js` وحده** (هوية + خدمات + ثيم + SEO). النسخة الفارغة الجاهزة لمتجر جديد: `js/config.template.js` |
+| الثيم | `config.js ← theme { preset, colors, fontFamily, ... }` ← يبنيه `js/boot.js` كمتغيرات CSS لكل الصفحات (المتجر + الأدمن + الدخول). 5 قوالب ألوان جاهزة + ألوان مخصصة |
+| الاختبارات والأدوات | `node tests/run-tests.js` (المنطق) · `node tests/boot-tests.js` (الثيم/الخدمات) · `node tools/check-config.js` (فحص الإعدادات قبل التسليم) · `node tools/set-version.js N` (رفع `?v=` في كل الصفحات). بلا اعتماديات، لا تُنشر ولا تُحمَّل من أي صفحة |
 
 **القاعدة الذهبية لفهم المشروع:** كل القراءة والكتابة للبيانات تمر عبر الكائن `Store` في `js/store.js`. الصفحات لا تتكلم مع Firebase مباشرة (باستثناء `auth.js`، و`admin.js` في تحديث الطلبات ورفع `ws_meta_v` عبر `bumpMetaVersion()`، و`products.js` في استعلام Algolia العام عند تفعيله).
+
+---
+
+## 0-ب. تسليم القالب لمتجر جديد — ملف واحد فقط (`js/config.js`)
+
+> **المبدأ:** كل ما يختلف بين متجر وآخر موجود في `js/config.js`، ولا شيء غيره. لا تفتح `index.html` ولا `style.css` ولا أي `.js` لتخصيص متجر. إن وجدت قيمة خاصة بمتجر مكتوبة في ملف آخر فهذا خلل في القالب يجب نقل قيمتها إلى `config.js` (القاعدة 20).
+
+### ماذا يتحكم به `config.js`؟
+
+| القسم في الملف | ما يتحكم به | أين يظهر أثره |
+|---|---|---|
+| 1) هوية المتجر | `storeName` `storeTagline` `storeDescription` `logo` `assetVersion` `currencySymbol` `lang` | الهيدر، الفوتر، **عنوان كل صفحة** (`<title>`)، وسوم المشاركة، favicon، رمز العملة في كل الأسعار ورسائل واتساب |
+| 2) التواصل | `whatsappNumber` `phone` `phone2` `instagram` `tiktok` `address` `mapUrl` `workingHours` `deliveryInfo` | قيم **افتراضية**: إن حفظ صاحب المتجر قيمة غير فارغة من لوحة التحكم فهي تتغلب، وإن ترك الحقل فارغاً تعود قيمة `config.js` |
+| 3.1) Firebase | `firebaseApiKey` … `firebaseAppId` `firebaseDatabaseURL` | قاعدة البيانات + تسجيل دخول الأدمن + `preconnect` تلقائي + الجلب المبكر |
+| 3.2) الأدمن | `adminEmails` | من يُسمح له بدخول `admin.html` |
+| 3.3) ImgBB | `imgbbApiKey` | رفع الصور من لوحة التحكم |
+| 3.4) ImageKit | `imageKitEndpoint` | ضغط الصور وتحويلها WebP عبر CDN + `preconnect` تلقائي |
+| 3.5) Google Analytics | `googleAnalyticsId` | يُحقن تلقائياً في **كل صفحات المتجر** (لا في `admin.html` و`login.html`)؛ فارغ = معطّل |
+| 3.6) Algolia | `useAlgolia` `algoliaAppId` `algoliaSearchKey` `algoliaIndexName` | بحث اختياري للمتاجر الضخمة (معطّل افتراضياً) |
+| 4) الثيم | `theme.preset` `theme.colors.*` `theme.fontFamily` `theme.fontWeights` `theme.fontUrl` `theme.radiusCard` `theme.radiusControl` `theme.containerWidth` `theme.cardImageRatio` `theme.cardImageFit` `theme.allowPreview` | ألوان وخط وشكل **المتجر + لوحة الأدمن + صفحة الدخول** دفعة واحدة |
+| 5) SEO | `siteUrl` | `og:url` و`og:image` وروابط المشاركة |
+| 6) حقوق المطوّر | `credit { show, name, instagram, instagramLabel, phone }` | سطر الفوتر السفلي (`show:false` يخفيه) |
+| 7) حدود وإصدارات | `dataVersion` `maxExcelImportCount` | الكاش واستيراد الإكسل |
+
+### الخطوات (بالترتيب)
+
+1. **انسخ مجلد القالب كاملاً** إلى مجلد جديد باسم المتجر (لكل متجر نسخة ومشروع Firebase مستقلان — القسم 11).
+2. **ابدأ من الملف الفارغ:** انسخ `js/config.template.js` فوق `js/config.js` (كل القيم فيه `YOUR_...`، وهذا يضمن ألا تبقى مفاتيح متجر سابق بالخطأ).
+3. **الهوية (القسم 1 في الملف):** `storeName` و`storeTagline` و`storeDescription` و`currencySymbol`. **الشعار:** ضع ملف PNG مربعاً (512×512 مثالياً) في `assets/logo/logo.png` (أو غيّر `logo` إلى مساره). ثم ارفع `assetVersion` كما في الخطوة 12.
+4. **Firebase** (التفاصيل الكاملة والقواعد في **القسم 9**):
+   - أنشئ مشروعاً جديداً ثم **Project settings ← Your apps ← Web** وانسخ `firebaseConfig`:
+
+     | في Firebase | في `config.js` |
+     |---|---|
+     | `apiKey` | `firebaseApiKey` |
+     | `authDomain` | `firebaseAuthDomain` |
+     | `projectId` | `firebaseProjectId` |
+     | `storageBucket` | `firebaseStorageBucket` |
+     | `messagingSenderId` | `firebaseMessagingSenderId` |
+     | `appId` | `firebaseAppId` |
+     | رابط **Realtime Database** (ليس Firestore) | `firebaseDatabaseURL` |
+
+   - فعّل **Authentication ← Email/Password** وأنشئ حساب الأدمن، وضع إيميله في `adminEmails`.
+   - الصق **Rules** (القسم 9، الخطوة 7) بعد استبدال `ADMIN_UID`، وأضف نطاق الموقع إلى **Authorized domains**.
+5. **ImgBB:** من `api.imgbb.com` ← Get API key ← `imgbbApiKey`. (مفتاح مستقل لكل متجر.)
+6. **ImageKit:** أنشئ حساباً ← **External storage ← Add origin** من نوع **Web Folder** وعنوانه `https://i.ibb.co` (ليس Web Proxy) ← انسخ **URL endpoint** إلى `imageKitEndpoint` بلا `/` أخيرة. (القسم 8.3؛ اتركه `""` لتعطيل الضغط — تعمل الصور من ImgBB مباشرة.)
+7. **Google Analytics:** Analytics ← Admin ← Data streams ← Web ← **Measurement ID** (يبدأ بـ `G-`) ← `googleAnalyticsId`. اتركه `""` إن لم يرغب المتجر بالتتبع. لا تلصق أي كود `gtag` في HTML: `boot.js` يفعل ذلك.
+8. **الثيم (القسم 4 في الملف):**
+   - اختر `theme.preset`: `navy-gold` (عام) · `cosmetics-rose` (كوزمتك) · `clothing-burgundy` (ملابس) · `pharmacy-teal` (صيدلية) · `pet-olive` (حيوانات أليفة).
+   - للون خاص بالمتجر اكتب `#RRGGBB` في `theme.colors.primary / secondary / accent / bg / surface / text / textMuted / border` (أي لون تتركه `""` يؤخذ من القالب). الدرجات المشتقة (hover، الخلفيات الفاتحة، لون النص فوق الأساسي، الظلال…) تُحسب تلقائياً، ويُختار تلقائياً لون النص فوق `primary` (أبيض أو داكن) حسب سطوعه.
+   - الخط: `theme.fontFamily` (أي خط عربي من Google Fonts مثل `Cairo` `Almarai` `Tajawal`)؛ للصور الطويلة (ملابس) اجعل `cardImageRatio: "4/5"`، وللصور ذات الخلفية البيضاء `cardImageFit: "contain"`.
+   - **للعرض على العميل المحتمل:** اجعل `theme.allowPreview: true` ثم افتح `index.html?theme=pharmacy-teal` (أو أي قالب) فيتغير المظهر في جهازك فقط دون تعديل الملف؛ `?theme=off` يلغي المعاينة. **عطّله (`false`) في النسخة النهائية.**
+9. **التواصل:** يكفي تعبئة `whatsappNumber` (صيغة دولية بلا `+`، مثل `9647801234567`) أو تركه ليملأه صاحب المتجر من لوحة التحكم ← الإعدادات. بدون رقم واتساب لا يُقبل إتمام الطلب.
+10. **`siteUrl`** = الدومين النهائي (`https://mystore.com` بلا `/`)، و**`credit`** = بياناتك كمطوّر (أو `show:false`).
+11. **`dataVersion`:** ابدأ بـ `1`. (يُرفع فقط بعد حذف/تعديل شامل للمنتجات.)
+12. **ارفع رقم النسخة** ليتحدث الشعار/CSS عند الزوار: `node tools/set-version.js 2` (يبدّل `?v=` في كل صفحات HTML و`assetVersion` معاً).
+13. **افحص قبل التسليم:**
+    ```
+    node tools/check-config.js     # يتحقق من كل مفتاح وصيغته والألوان والقالب ويحذّر من الأخطاء الأمنية
+    node tests/run-tests.js        # منطق المتجر
+    node tests/boot-tests.js       # الثيم والخدمات
+    ```
+    `check-config.js` يعطي ✗ لأي قيمة ناقصة أو ما زالت `YOUR_...`، و`!` للتحذيرات (مثل `algoliaAdminKey` معبّأ أو `allowPreview` مفعّل أو إيميل الأدمن التجريبي).
+14. **انشر** (القسم 10) ثم: سجّل الدخول للأدمن، واملأ **الإعدادات** (واتساب أولاً)، وأضف الأقسام والمنتجات.
+
+### قواعد سريعة عند التسليم
+
+- **ما يتغير بين المتاجر:** `js/config.js` + `assets/logo/logo.png` فقط. لا تغيّر أي ملف آخر.
+- **نصوص صفحات HTML** (عنوان الصفحة، وصف الرئيسية، وسوم المشاركة) تأخذ الاسم والوصف والرابط من `config.js` عبر الرموز `{{storeName}}` `{{storeTagline}}` `{{storeDescription}}` `{{siteUrl}}` `{{logoUrl}}` `{{currencySymbol}}` (يستبدلها `boot.js`). أي عنصر نصي بسمة `data-cfg="storeName"` يمتلئ تلقائياً، وأي `<img data-logo>` يأخذ مسار الشعار من `config.logo`.
+- **نصوص الهيرو والمزايا** في `index.html` وصفحة `about.html` نصوص تسويقية عامة (ليست إعدادات)؛ تعديلها لعميل بعينه يتم في ملف نسخته فقط، وإن تكرر الطلب فانقلها إلى مفاتيح جديدة في `config.js` (القسم 12 — وصفة "إضافة مفتاح إعداد").
+- **لا تضع أسراراً في `config.js`:** الملف عام يراه كل زائر. مفاتيح Firebase (الويب) وImgBB وAlgolia-Search مقبولة بطبيعتها، أما **`algoliaAdminKey` فاتركه فارغاً دائماً**.
+- **حدود "ملف واحد":** وسوم المشاركة (`og:*`) تُملأ بالجافاسكربت؛ فيسبوك/واتساب/تويتر لا تنفّذ الجافاسكربت عند جلب المعاينة وستظهر الرموز غير مستبدلة. محركات البحث الحديثة (Google) تنفّذه. إن كانت معاينة الروابط في واتساب مهمة جداً لمتجر معيّن فاكتب وسوم `og:*` ثابتة في `index.html` لنسخته.
 
 ---
 
@@ -44,14 +118,20 @@
 ├── login.html        دخول الأدمن (Firebase Auth)
 ├── admin.html        لوحة التحكم (6 لوحات + 3 نوافذ منبثقة)
 ├── _headers          ترويسات الكاش (Cloudflare Pages/Netlify): `/assets/*` أسبوع immutable، `/css/*` يوم، **`/js/*` بلا كاش (no-cache)**. لا يؤثر على `?v=` (يبقى مطلوباً لـ CSS)
-├── assets/logo/logo.png   الشعار: favicon + الهيدر + الفوتر + الدخول + الصورة الافتراضية للهيرو
+├── assets/logo/logo.png   الشعار: favicon + الهيدر + الفوتر + الدخول + الصورة الافتراضية للهيرو (المسار يُضبط من `config.logo`)
 ├── css/
 │   ├── style.css     نظام التصميم كاملاً: متغيرات الألوان (:root) + كل المكوّنات + لوحة الأدمن + الاستجابة (الملف الوحيد الذي يحمّله login.html)
 │   └── refresh.css   طبقة صغيرة تُحمَّل بعد style.css: تحسينات الجوال/التابلت فقط (سلايدرات سحب، شريط شراء ثابت، فوتر مضغوط)
 ├── tests/
-│   └── run-tests.js  اختبارات Node بلا اعتماديات (المخزون، الكاش، حماية الكتابة، safeUrl/escapeHtml) — للتطوير فقط
+│   ├── run-tests.js  اختبارات Node بلا اعتماديات (المخزون، الكاش، حماية الكتابة، safeUrl/escapeHtml، دمج الإعدادات) — للتطوير فقط
+│   └── boot-tests.js اختبارات المحرّك boot.js (الثيم، القوالب، GA، الرموز، الجلب المبكر) — للتطوير فقط
+├── tools/
+│   ├── check-config.js  فحص `config.js` قبل التسليم (مفاتيح ناقصة/صيغ خاطئة/ألوان/تحذيرات أمنية)
+│   └── set-version.js   رفع `?v=` في كل صفحات HTML + `assetVersion` دفعة واحدة
 └── js/
-    ├── config.js     إعدادات المتجر ومفاتيح الخدمات  ← أول ملف يُعدَّل لكل عميل
+    ├── config.js     **ملف الإعدادات الوحيد لكل متجر** (هوية، تواصل، خدمات، ثيم، SEO) ← الملف الوحيد الذي يُعدَّل لكل عميل
+    ├── config.template.js  نسخة فارغة (`YOUR_...`) تُنسخ فوق `config.js` عند بدء متجر جديد
+    ├── boot.js       محرّك التهيئة (لا يُعدَّل لكل متجر): يبني الثيم (متغيرات CSS) + الخط + favicon + preconnect + Google Analytics + رموز `{{...}}` + الجلب المبكر للرئيسية
     ├── icons.js      أيقونات SVG + iconSvg(key) + CATEGORY_ICON_KEYS
     ├── store.js      طبقة البيانات (Store) + تهيئة Firebase (SDK اختياري) + قراءة REST + الكاش + **الفهرس الخفيف ws_index** + seed
     ├── whatsapp.js   formatPrice + نافذة التوصيل + بناء رسائل واتساب + تسجيل الطلب
@@ -64,70 +144,93 @@
 
 ### ترتيب تحميل السكربتات (مهم جداً — لا تغيّره)
 
-الترتيب المنطقي دائماً: `config → icons → firebase-app → [firebase-auth] → firebase-database → store → whatsapp → app → سكربت الصفحة`
+الترتيب المنطقي دائماً: **(في `<head>` بعد روابط CSS مباشرة) `config → boot`** ثم في آخر الصفحة `icons → firebase-app → [firebase-auth] → firebase-database → store → whatsapp → app → سكربت الصفحة`. `config.js` و`boot.js` متزامنان (بلا `defer`) في **كل** الصفحات الـ9 ليُطبَّق الثيم قبل أول رسم.
 
 | الصفحة | السكربتات بعد المشتركة | ملاحظات |
 |---|---|---|
-| `index.html` | سكربت مضمّن (لا يحمّل `products.js`) | كل السكربتات بـ `defer`؛ يبدأ **جلب مبكر** عبر `window.__early` قبل تحميل `store.js` (يلتقطه `takeEarly`) |
+| `index.html` | سكربت مضمّن (لا يحمّل `products.js`) | كل السكربتات بـ `defer`؛ يبدأ **جلب مبكر** عبر `window.__early` من `boot.js` (يعمل فقط في الصفحة التي تحمل `<html data-early-fetch>`) قبل تحميل `store.js` (يلتقطه `takeEarly`) |
 | `products.html` | `products.js` | **لا يحمّل Firebase SDK** — القراءة عبر REST (`restGet`) والطلبات تُرسل بـ REST (`postOrderRest`) |
 | `product.html` | `products.js` | بلا Firebase SDK (REST) |
 | `cart.html` | `cart.js` + سكربت مضمّن صغير | بلا Firebase SDK (REST) |
 | `categories.html` / `about.html` / `contact.html` | سكربت مضمّن لكل صفحة | |
-| `login.html` | `firebase-auth-compat` + `auth.js` | لا يحمّل `refresh.css` |
-| `admin.html` | مكتبة **SheetJS** (xlsx@0.18.5 من jsDelivr) + `firebase-auth-compat` + `auth.js` + `admin.js` + سكربت مضمّن | `firebase-auth` **يجب** أن يسبق `store.js` وإلا لن يُنشأ `firebaseAuth` |
+| `login.html` | `firebase-auth-compat` + `auth.js` | لا يحمّل `refresh.css`؛ `<html data-no-analytics>` |
+| `admin.html` | (`<html data-no-analytics>`) مكتبة **SheetJS** (xlsx@0.18.5 من jsDelivr) + `firebase-auth-compat` + `auth.js` + `admin.js` + سكربت مضمّن | `firebase-auth` **يجب** أن يسبق `store.js` وإلا لن يُنشأ `firebaseAuth` |
 
-- كل الصفحات تحمّل خط **Tajawal** (400/500/700) من Google Fonts (غير حاجب للرسم: `media=print onload`). `--font-display` في CSS يبدأ بـ `IBM Plex Sans Arabic` لكنه **غير محمَّل** من أي صفحة فيسقط عملياً إلى Tajawal (تم حذف خط Cairo غير المستخدم من الروابط).
+- **الخط يُحمَّل من `boot.js`** حسب `config.theme.fontFamily` / `fontWeights` (Google Fonts، غير حاجب للرسم: `media=print onload`) أو من `theme.fontUrl`؛ لا توجد روابط خطوط في HTML. الافتراضي Tajawal (400/500/700). `--font-display` و`--font-body` يضبطهما `boot.js` أيضاً.
 - نسخة Firebase المستخدمة: **10.12.2 (compat)** من `gstatic.com`.
-- `?v=NN` في روابط CSS/JS هو **cache-busting يدوي**. القيمة الحالية **77 في كل الصفحات (وفي كل الملفات داخل الصفحة الواحدة)**. ⚠️ كانت الصفحات تحمل أرقاماً مختلفة (68 و71...) فيُحمَّل نفس الملف بعنوانين مختلفين ويُهدَر الكاش — **ارفع الرقم دائماً في كل صفحات HTML معاً** (أمر مقترح: استبدال `?v=77` بالرقم الجديد في كل `*.html`). عند تعديل أي JS/CSS: ارفع الرقم في كل صفحة HTML تستدعي ذلك الملف.
+- `?v=NN` في روابط CSS/JS هو **cache-busting يدوي** — **استعمل `node tools/set-version.js NN`** فهو يبدّله في كل الصفحات ويحدّث `assetVersion` (الذي يضيفه `boot.js` لروابط الشعار/favicon). القيمة الحالية **77 في كل الصفحات (وفي كل الملفات داخل الصفحة الواحدة)**. ⚠️ كانت الصفحات تحمل أرقاماً مختلفة (68 و71...) فيُحمَّل نفس الملف بعنوانين مختلفين ويُهدَر الكاش — **ارفع الرقم دائماً في كل صفحات HTML معاً** (أمر مقترح: استبدال `?v=77` بالرقم الجديد في كل `*.html`). عند تعديل أي JS/CSS: ارفع الرقم في كل صفحة HTML تستدعي ذلك الملف.
 
 ---
 
 ## 2. `js/config.js` — شرح كل مفتاح
 
+**هذا هو الملف الوحيد الذي يختلف بين متجر وآخر** (انظر جدول القسم 0-ب). نسخته الفارغة: `js/config.template.js`. التعليقات داخل الملف بالعربية وتشرح مصدر كل قيمة.
+
 ```js
 const STORE_CONFIG = {
-  dataVersion: 2,                 // رقم إصدار الكاش (انظر القسم 4)
-  storeName: "...",               // اسم المتجر (قيمة أولية فقط — الأدمن يعدّلها لاحقاً من الإعدادات)
-  storeTagline: "...", storeDescription: "...",
+  // 1) هوية المتجر
+  storeName: "...", storeTagline: "...", storeDescription: "...",
+  logo: "assets/logo/logo.png", assetVersion: 77, currencySymbol: "د.ع", lang: "ar",
+
+  // 2) تواصل (قيم افتراضية؛ لوحة التحكم تتغلب عليها إن حُفظت فيها قيمة غير فارغة)
   whatsappNumber: "",             // دولي بلا + وبلا مسافات: 9647xxxxxxxxx
-  phone: "", instagram: "", tiktok: "", address: "", workingHours: "", deliveryInfo: "",
-  currencySymbol: "د.ع",
+  phone: "", phone2: "", instagram: "", tiktok: "", address: "", mapUrl: "", workingHours: "", deliveryInfo: "",
 
-  // Firebase Web App (من Project settings ← Your apps) — مفاتيح عامة بطبيعتها
-  firebaseApiKey: "YOUR_API_KEY",
-  firebaseAuthDomain: "YOUR_PROJECT.firebaseapp.com",
-  firebaseProjectId: "YOUR_PROJECT",
-  firebaseStorageBucket: "YOUR_PROJECT.firebasestorage.app",   // غير مستخدم فعلياً (لا نستخدم Storage)
-  firebaseMessagingSenderId: "...",
-  firebaseAppId: "1:...:web:...",
-
-  adminEmails: ["admin@example.com"],   // من يُسمح له بدخول لوحة الأدمن (فحص واجهة فقط — الحماية الحقيقية في Rules)
-
+  // 3.1) Firebase Web App (من Project settings ← Your apps) — مفاتيح عامة بطبيعتها
+  firebaseApiKey: "YOUR_API_KEY", firebaseAuthDomain: "YOUR_PROJECT.firebaseapp.com",
+  firebaseProjectId: "YOUR_PROJECT", firebaseStorageBucket: "YOUR_PROJECT.firebasestorage.app", // غير مستخدم فعلياً
+  firebaseMessagingSenderId: "...", firebaseAppId: "1:...:web:...",
   firebaseDatabaseURL: "https://YOUR_PROJECT-default-rtdb.REGION.firebasedatabase.app/",
 
-  imgbbApiKey: "YOUR_IMGBB_KEY",                    // رفع الصور (ظاهر للزوار — انظر القسم 15)
+  // 3.2) الأدمن (فحص واجهة فقط — الحماية الحقيقية في Rules)
+  adminEmails: ["admin@example.com"],
+
+  // 3.3 / 3.4) الصور
+  imgbbApiKey: "YOUR_IMGBB_KEY",                      // ظاهر للزوار — القسم 15
   imageKitEndpoint: "https://ik.imagekit.io/YOUR_ID", // بدون / في النهاية
 
-  // Algolia (اختياري ومعطّل افتراضياً — لا يُستعمل إلا مع useAlgolia: true)
-  algoliaAppId: "YOUR_APP_ID",
-  algoliaSearchKey: "YOUR_SEARCH_ONLY_KEY",   // Search-Only: آمن للواجهة العامة
-  algoliaAdminKey: "",                        // ⛔ اتركه فارغاً دائماً! (انظر الأسفل)
-  algoliaIndexName: "products",
-  algoliaThreshold: 2000,                     // ⚠️ لم يعد مستخدماً في الكود (بقايا من التحويل التلقائي القديم)
+  // 3.5) Google Analytics 4 — "" = معطّل
+  googleAnalyticsId: "G-XXXXXXXXXX",
 
-  maxExcelImportCount: 100        // أقصى عدد صفوف يُقبل في استيراد Excel دفعة واحدة
+  // 3.6) Algolia (اختياري ومعطّل افتراضياً)
+  useAlgolia: false, algoliaAppId: "", algoliaSearchKey: "",
+  algoliaAdminKey: "",            // ⛔ اتركه فارغاً دائماً
+  algoliaIndexName: "products", algoliaThreshold: 2000, // ⚠️ algoliaThreshold لم يعد مستخدماً
+
+  // 4) الثيم
+  theme: {
+    preset: "navy-gold",          // navy-gold | cosmetics-rose | clothing-burgundy | pharmacy-teal | pet-olive
+    colors: { primary: "", secondary: "", accent: "", bg: "", surface: "", text: "", textMuted: "", border: "", hero: "",
+              success: "", warning: "", error: "" },   // "" = من القالب؛ #RRGGBB = لون مخصص
+    fontFamily: "Tajawal", fontWeights: "400;500;700", fontUrl: "",
+    radiusCard: 14, radiusControl: 10, containerWidth: 1240,
+    cardImageRatio: "1/1", cardImageFit: "cover",
+    allowPreview: false           // معاينة ?theme=... للعرض على العملاء (عطّلها في النسخة النهائية)
+  },
+
+  // 5) SEO
+  siteUrl: "",                    // https://domain بلا / — فارغ = يؤخذ من المتصفح
+
+  // 6) حقوق المطوّر في الفوتر
+  credit: { show: true, name: "...", instagram: "https://instagram.com/...", instagramLabel: "@...", phone: "..." },
+
+  // 7) حدود وإصدارات
+  dataVersion: 1, maxExcelImportCount: 100
 };
 ```
 
-**حالة `config.js` في النسخة المرفقة (حقائق):** لا يوجد فيه المفتاح `useAlgolia` أصلاً (= Algolia معطّل لأن الكود يتحقق من `cfg.useAlgolia === true`)، ويحوي `algoliaThreshold: 2000` (بلا أثر)، و**`algoliaAdminKey` معبّأ بقيمة حقيقية** (⚠️ مفتاح إداري ظاهر لكل زائر — احذفه وأنشئ بديلاً من لوحة Algolia؛ لا حاجة له أصلاً ما دام Algolia معطلاً)، وكذلك مفاتيح Firebase/ImgBB/Algolia-Search حقيقية. **لا تنسخ قيم `config.js` إلى أي ذكاء اصطناعي ولا إلى مستودع عام قدر الإمكان.**
+**حالة `config.js` في النسخة المرفقة (حقائق):** يحوي بيانات مشروع الاختبار (`test3-2a6de`) كمثال عامل. `useAlgolia:false` و`algoliaAdminKey:""` (تم تفريغ المفتاح الإداري الذي كان معبّأً سابقاً — **إن سبق نشره فبدّله من لوحة Algolia**). لا تنسخ قيم `config.js` إلى أي ذكاء اصطناعي ولا إلى مستودع عام قدر الإمكان. لمتجر جديد ابدأ دائماً من `config.template.js`.
 
-**أهم نقطة:** القيم النصية (الاسم، الواتساب، الإنستغرام...) في `config.js` تُستخدم **كقيم أولية فقط** عند أول زيارة (`seedIfNeeded`). بعد ذلك تصبح مصدر الحقيقة هي `ws_settings` في Firebase والتي يعدّلها الأدمن من لوحة الإعدادات. تغيير `config.js` لاحقاً **لا** يغيّر إعدادات زوار سبق أن زاروا الموقع (لأن `ws_settings` لا يُمسح عند رفع `dataVersion`).
+**كيف تُستخدم القيم النصية (الاسم، الواتساب…):** `Store.getSettings()` تُرجع **قيم `config.js` كقيم افتراضية** (`storeName`، `whatsappNumber→whatsapp`، `phone`، `phone2`، `instagram`، `tiktok`، `address`، `mapUrl`، `workingHours`، `deliveryInfo`، `currencySymbol`…)، وتتغلب عليها **أي قيمة غير فارغة** محفوظة في `ws_settings` (من لوحة الإعدادات). حقل فارغ في لوحة التحكم ← تعود قيمة `config.js`. `saveSettings` يكتب على المحفوظ فقط (لا يثبّت قيم `config.js` في Firebase). تغيير `config.js` يؤثر فوراً على كل الزوار ما لم يكن صاحب المتجر قد حفظ قيمة خاصة به من اللوحة. (ملاحظة: `seedIfNeeded` لا يستخدم هذه الحقول؛ يستخدم `dataVersion` فقط.)
 
 - إن كان `firebaseDatabaseURL` فارغاً → يعمل الموقع **محلياً فقط** على `localStorage` (بلا Firebase).
 - المصادقة تُفعَّل فقط إذا اكتملت: `apiKey` و`authDomain` و`projectId` و`appId`.
 - **`useAlgolia`:** الافتراضي `false`. عندها لا يُستدعى Algolia إطلاقاً (لا بحث ولا مزامنة ولا نافذة مفتاح إداري). عند `true` (مع `algoliaAppId` و`algoliaSearchKey`) يصبح الاستعلام مباشراً من Algolia لكل المتجر. `algoliaThreshold` **لم يعد يحدد شيئاً**.
-- **`algoliaAdminKey` (أمان، يُهم فقط مع `useAlgolia:true`):** `config.js` يُحمَّل لكل زائر، ومفتاح Algolia الإداري يتيح حذف/تعديل الفهرس كاملاً. لذلك صار فارغاً، ولوحة الأدمن (`requestAlgoliaAdminKey` في `admin.js`) تطلبه بنافذة `prompt` **مرة لكل جلسة** وتحفظه في `sessionStorage` فقط. الإلغاء = تخطي المزامنة. إن وُجدت قيمة قديمة في `config.js` ما زالت تُستعمل مع تحذير — **احذفها وأنشئ مفتاحاً جديداً** إن سبق نشرها.
+- **`algoliaAdminKey` (أمان، يُهم فقط مع `useAlgolia:true`):** `config.js` يُحمَّل لكل زائر، ومفتاح Algolia الإداري يتيح حذف/تعديل الفهرس كاملاً. لذلك يبقى فارغاً، ولوحة الأدمن (`requestAlgoliaAdminKey` في `admin.js`) تطلبه بنافذة `prompt` **مرة لكل جلسة** وتحفظه في `sessionStorage` فقط. الإلغاء = تخطي المزامنة. إن وُجدت قيمة قديمة في `config.js` ما زالت تُستعمل مع تحذير — **احذفها وأنشئ مفتاحاً جديداً** إن سبق نشرها (`check-config.js` يعدّه خطأ).
 - مزامنة Algolia (عند `useAlgolia:true` فقط) تحدث عند **كل حفظ/حذف/استيراد** من الأدمن (للمنتجات المتأثرة فقط) وتحذف غير المتاحة من فهرس Algolia. ملؤه لأول مرة للكتالوج الموجود **يدوي** (القسم 15).
+
+### ما يفعله `js/boot.js` (المحرّك الذي يقرأ الإعدادات)
+يُحمَّل بعد `config.js` في `<head>` كل صفحة، وينفّذ بالترتيب: (1) يبني متغيرات الثيم ويحقنها في `<style id="store-theme">` بالمحدِّد `:root:root` (فيتغلب على قيم `style.css` الاحتياطية)، (2) لون شريط المتصفح `theme-color`، (3) الخط (Google Fonts أو `fontUrl`)، (4) favicon وapple-touch-icon من `logo` + `assetVersion`، (5) `preconnect` لـ Firebase وImageKit، (6) Google Analytics إن وُجد `googleAnalyticsId` ولم تحمل الصفحة `data-no-analytics`، (7) استبدال رموز `{{...}}` في `<title>` ووسوم `<meta>`، وملء `[data-cfg]` و`img[data-logo]` بعد تحميل DOM، (8) الجلب المبكر لبيانات الرئيسية (فقط مع `data-early-fetch`). يعرض أيضاً `window.StoreBoot = { presets, activePreset, vars }` للفحص من الكونسول.
 
 ---
 
@@ -227,7 +330,7 @@ const STORE_CONFIG = {
 **الثوابت (أعلى `store.js`):** `META_PULL_MS = 20s` (فحص الأقسام/الإعدادات/الإعلانات) · `INDEX_CHECK_MS = 20s` (فحص الفهرس) · `QUERY_CACHE_MS = 15s` (ذاكرة مؤقتة داخل الصفحة للاستعلامات) · `FETCH_TIMEOUT_MS = 15s` · `PRODUCT_CACHE_LIMIT = 5000` (سقف المنتجات في الكاش المحلي). `META_CACHE_MS = 60s` و`REFRESH_MS` **بقايا لا تؤثر** (الأول تستعمله دوال العدّاد غير المستخدمة، والثاني غير مستعمل).
 
 1. **تحميل الصفحة:** `store.js` يهيّئ Firebase SDK **إن وُجد** (صفحتا `admin.html` و`login.html` فقط؛ باقي الصفحات بلا SDK وتقرأ عبر REST `restGet`). ثم `seedIfNeeded()` ثم `pullFromFirebase()`.
-2. **`index.html` — الجلب المبكر (`window.__early`) في `<head>` قبل تحميل `store.js`:**
+2. **الجلب المبكر (`window.__early`) — صار في `js/boot.js` (يعمل فقط في الصفحة التي تحمل `<html data-early-fetch>`، أي `index.html`)، ويسبق تحميل `store.js`:**
    - أول زيارة (لا `ws_categories` محلياً): يجلب `ws_categories` و`ws_settings` و`ws_ads`.
    - زائر عائد: يجلب `ws_meta_v` فقط (إن مرّت أكثر من 20 ثانية على آخر فحص) و`ws_index/v` فقط (إن لم يوجد فهرس محلي أو مرّت 20 ثانية).
    - بلا فهرس محلي: يجلب 5 منتجات لكل من `featured` و`isOffer` و`isNew` (استعلام `orderBy/equalTo`). يلتقطها `takeEarly` في `store.js` بدل طلب جديد.
@@ -267,7 +370,7 @@ const STORE_CONFIG = {
 - `renderHeader()` (+ بحث عام Overlay) / `renderFooter()` / `renderSidebarNav()` (فيها الأقسام الرئيسية والفرعية) / `showToast(msg,'success'|'error')` / `updateCartBadge()` / `initBackToTop()`.
 - **البحث العام** (الأيقونة في الهيدر): يستدعي `Store.ensureIndexFresh()` ثم يبحث في **الفهرس الخفيف كله** (`getIndexItems()`، بالاسم/الباركود، كل كلمة يجب أن تظهر، مع توحيد الحروف العربية)، ويعرض أول 8 نتائج متاحة. **لا يبحث في الوصف** (غير موجود في الفهرس). `safeUrl(url)`: يزيل الأحرف الخفية ثم يسمح فقط بـ `http(s)/tel/mailto`/المسارات النسبية — **إلزامي** لأي رابط يأتي من الإعدادات/الإعلانات.
 - `safeUrl(url)`: يزيل الأحرف الخفية ثم يسمح فقط بـ `http(s)/tel/mailto`/المسارات النسبية — **إلزامي** لأي رابط يأتي من الإعدادات/الإعلانات.
-- سطر حقوق المبرمج مكتوب ثابتاً داخل `renderFooter()` (غيّره/احذفه حسب الحاجة).
+- سطر حقوق المبرمج يُبنى في `buildCreditHtml()` من `STORE_CONFIG.credit` (`show:false` يخفيه) — لا يُكتب ثابتاً في الكود.
 
 ### index.html (الرئيسية)
 - لا يحمّل `products.js`؛ يعيد تعريف `productMediaHtml/productHasOptions/renderHomeProductCard/quickAddToCart/renderGridInto` **داخل السكربت المضمّن** (⚠️ تكرار — أي تعديل على شكل بطاقة المنتج يجب أن يُطبَّق في `products.js` **و** `index.html`).
@@ -303,34 +406,46 @@ const STORE_CONFIG = {
 
 ---
 
-## 5-ب. نظام التصميم (CSS) — الثيم الموحّد: كحلي / أزرق / ذهبي
+## 5-ب. نظام التصميم (CSS) — الثيم يُدار من `config.js`
 
 ### المبدأ
-- **`css/style.css`** هو نظام التصميم الكامل (متغيرات + مكوّنات + أدمن + استجابة). **`css/refresh.css`** طبقة صغيرة فوقه للجوال فقط. لا توجد أي كتلة `<style>` داخل صفحات HTML بعد الآن؛ أي تعديل بصري يتم في هذين الملفين.
-- لا ألوان ثابتة داخل القواعد: كل لون يأتي من متغير في `:root` (الاستثناء الوحيد: ظلال `rgba(15,23,42,…)` وتدرجات الهيرو الشفافة وبعض ألوان الفوتر الرمادية الفاتحة).
+- **`css/style.css`** هو نظام التصميم الكامل (متغيرات + مكوّنات + أدمن + استجابة). **`css/refresh.css`** طبقة صغيرة فوقه للجوال فقط. لا توجد أي كتلة `<style>` داخل صفحات HTML؛ تعديل **المكوّنات** يتم في هذين الملفين، أما **الألوان والخط والشكل** فتُدار من `config.js` فقط.
+- **لا تُعدَّل الألوان داخل `style.css`.** كتلة `:root` في أعلاه صارت **قيماً احتياطية محايدة** (تُستعمل فقط لو تعطّل JavaScript أو لم يُحمَّل `config.js`)؛ `boot.js` يتجاوز كل متغيراتها في **كل** الصفحات (المتجر + الأدمن + الدخول) بالمحدِّد `:root:root`.
+- لا ألوان ثابتة داخل القواعد: كل لون يأتي من متغير. الاستثناءات المقصودة: لون النص الأبيض فوق شارات `--error` و`--secondary` و`--success`، وبقع بيضاء فوق الصور (`.promo-dot`, `.badge-variants`)، وألوان بيانات المنتج نفسها (لون المنتج `hex`).
 
-### تغيير هوية عميل = تعديل كتلة "Brand" فقط (أعلى `style.css`)
-| المتغير | القيمة الحالية | الاستخدام |
+### تغيير هوية عميل = `config.theme` فقط
+1. اختر `theme.preset` (`navy-gold` · `cosmetics-rose` · `clothing-burgundy` · `pharmacy-teal` · `pet-olive`).
+2. (اختياري) اكتب ألواناً مخصصة في `theme.colors` — أي لون غير فارغ يتغلب على القالب:
+
+| المفتاح | المتغير | الاستخدام |
 |---|---|---|
-| `--primary` | `#172554` (كحلي) | الأزرار الرئيسية، العناوين، الفوتر، شريط الهيرو، قائمة الأدمن، الأسعار |
-| `--secondary` | `#2563EB` (أزرق) | الروابط، hover للأزرار الرئيسية، حلقة التركيز، العناصر المحددة، شارة "جديد" |
-| `--accent` | `#D4A853` (ذهبي) | شارة "مميز"، عدّاد السلة، خط تحت عناوين الأقسام، خط الفوتر، تمييز عنصر الأدمن النشط |
-| `--bg` / `--surface` | `#F8FAFC` / `#FFFFFF` | خلفية الصفحة / البطاقات والحقول والنوافذ |
-| `--text` / `--text-2` | `#0F172A` / `#64748B` | النص الأساسي / الثانوي |
-| `--border` | `#E2E8F0` | الحدود |
+| `primary` | `--primary` | الأزرار الرئيسية، العناوين، الفوتر، شريط الهيرو، قائمة الأدمن، الأسعار (**لون داكن**؛ النص فوقه يُختار تلقائياً أبيض/داكن) |
+| `secondary` | `--secondary` | الروابط، hover للأزرار الرئيسية، حلقة التركيز، العناصر المحددة، شارة "جديد"، ألوان التنبيهات المعلوماتية |
+| `accent` | `--accent` | شارة "مميز"، عدّاد السلة، خط تحت عناوين الأقسام، خط الفوتر، تمييز عنصر الأدمن النشط |
+| `bg` / `surface` | `--bg` / `--surface` | خلفية الصفحة / البطاقات والحقول والنوافذ |
+| `text` / `textMuted` | `--text` / `--text-2` | النص الأساسي / الثانوي |
+| `border` | `--border` | الحدود |
+| `hero` | `--hero-bg` | (اختياري) **خلفية الإعلان/الهيرو** في أعلى الرئيسية، منفصلة عن `primary`. فارغ = تتبع `primary`. عند تحديده يُحسب لون النص والطبقات الشفافة داخل الهيرو من سطوعه تلقائياً |
+| `success` `warning` `error` | `--success…` | (اختياري) ألوان الحالات؛ تُشتق منها خلفياتها وحدودها |
 
-**مشتقات تُحسب تلقائياً** من الألوان أعلاه داخل `@supports (color:color-mix(...))` (مع قيم ثابتة احتياطية للمتصفحات القديمة): `--primary-hover`, `--secondary-hover`, `--secondary-50/100` (خلفيات فاتحة للـ hover والتحديد), `--accent-soft`, `--accent-ink` (ذهبي غامق **للنصوص** لأن `#D4A853` تباينه ضعيف على الأبيض), `--surface-2`, `--border-soft`. إن غيّرت لوناً أساسياً وأردت درجة محددة بالضبط عدّل القيمة الاحتياطية **و** سطر `color-mix`.
+**يشتقّ `boot.js` تلقائياً (بلا تدخل):** `--primary-hover`, `--secondary-hover`, `--secondary-50/100`, `--accent-soft`, `--accent-ink` (نسخة داكنة للنصوص)، `--accent-hover`, `--surface-2`, `--border-soft`, `--border-strong`, `--on-primary` (+ `-soft/-muted/-dim/-rgb`: نص وطبقات شفافة فوق الأساسي)، `--primary-rgb/--secondary-rgb/--accent-rgb/--text-rgb` (للظلال وتدرجات الهيرو وحلقة التركيز)، درجات `--ink-*`، وألوان `--info*`.
+
+3. **الخط:** `theme.fontFamily` (+ `fontWeights` أو `fontUrl`) ← `--font-display` و`--font-body`.
+4. **الشكل:** `radiusCard` ← `--r-card`، `radiusControl` ← `--r-ctl`، `containerWidth` ← `--container`.
+5. **بطاقة المنتج:** `cardImageRatio` ← `--card-image-ratio` (`1/1`؛ `4/5` للأزياء)، `cardImageFit` ← `--card-image-fit` (`cover` أو `contain` لصور المنتج ذات الخلفية البيضاء).
+
+**إضافة قالب ألوان جديد للمكتبة:** أضف سطراً إلى كائن `PRESETS` في أعلى `boot.js` (8 ألوان: `primary secondary accent bg surface text textMuted border`)، ثم أضف اسمه إلى تعليق `theme.preset` في `config.js` و`config.template.js`، وأضف اختباراً في `tests/boot-tests.js`. تأكد من تباين النص فوق `primary` ومن أن `secondary` يبلغ تباينه ≥ 4.5 على الأبيض (لأنه لون الروابط ونص الشارات) وأن `accent` يختلف بوضوح عن `secondary`. (قالب `pharmacy-teal` يستعمل تركوازياً أغمق قليلاً `#0E7C7E` لهذا السبب؛ إن أراد العميل تركوازيه الأصلي `#159A9C` فضعه في `theme.colors.secondary` مع العلم أن تباينه 3.4 فقط.)
+
+**الظلال والحدود الشفافة:** في CSS تُكتب `rgba(var(--text-rgb), .12)` و`rgba(var(--secondary-rgb), .22)` و`rgba(var(--on-primary-rgb), .1)` (فوق الأسطح بلون `primary`) — **لا** `rgba(15,23,42,…)` ولا `rgba(255,255,255,…)` إلا فوق الصور.
 
 **حالات النظام:** `--success|warning|error|info` + `-bg` + `-line` + `-ink` لكل حالة (شارات الأدمن، التنبيهات، التوست).
 
-**الشكل:** `--radius-sm/md/lg/xl/pill`، `--r-card:14px`، `--r-ctl:10px` (الأزرار والحقول)، `--shadow-soft/card/lift`، `--ring` (حلقة التركيز الزرقاء)، `--overlay`. **الخط:** `--font-display` و`--font-body` (IBM Plex Sans Arabic ثم Tajawal ثم خطوط النظام).
-
-**خيارات بطاقة المنتج (لكل عميل):** `--card-image-ratio` (الافتراضي `1/1`؛ استعمل `4/5` للأزياء) و`--card-image-fit` (`cover` أو `contain` لصور المنتج ذات الخلفية البيضاء).
+**المتغيرات الثابتة في CSS (لا يغيّرها `config`):** `--radius-sm/md/lg/xl/pill`، `--shadow-soft/card/lift`، `--ring`، `--overlay` (تعتمد على متغيرات الألوان فتتبع الثيم تلقائياً).
 
 ### أسماء المتغيرات القديمة (Aliases) — لا تحذفها
 ملفات HTML/JS ما زالت تستعمل أنماطاً مضمّنة مثل `style="color:var(--olive-700)"`. لذلك بقيت الأسماء القديمة كاختصارات للمتغيرات الجديدة:
-`--teal→secondary`, `--teal-deep→primary`, `--teal-light→secondary-50`, `--teal-wash→surface-2`, `--navy→primary`, `--olive-900/800/700→primary`, `--olive-600/500→secondary`, `--olive-400→#94A3B8`, `--olive-100→secondary-50`, `--olive-50→surface-2`, `--sand-500→accent-ink`, `--sand-100→accent-soft`, `--cream→bg`, `--white→surface`, `--ink-900…300` (درجات الرمادي/النص), `--line/--line-strong/--line-soft→border…`, `--danger→error`.
-**في أي كود جديد استخدم الأسماء الجديدة (`--primary` إلخ).**
+`--teal→secondary`, `--teal-deep→primary`, `--teal-light→secondary-50`, `--teal-wash→surface-2`, `--navy→primary`, `--olive-900/800/700→primary`, `--olive-600/500→secondary`, `--olive-400→درجة رمادية يشتقها boot.js`, `--olive-100→secondary-50`, `--olive-50→surface-2`, `--sand-500→accent-ink`, `--sand-100→accent-soft`, `--cream→bg`, `--white→surface`, `--ink-900…300` (درجات الرمادي/النص), `--line/--line-strong/--line-soft→border…`, `--danger→error`.
+**في أي كود جديد استخدم الأسماء الجديدة (`--primary` إلخ).** (الأسماء القديمة `--olive-*`/`--teal-*`/`--sand-*` تتبع الثيم الجديد تلقائياً لأنها اختصارات للمتغيرات التي يضبطها `boot.js`.)
 
 ### فهرس المكوّنات (الأصناف المهمة في `style.css`)
 | المنطقة | الأصناف |
@@ -475,7 +590,7 @@ return d.secure_url;   // getIkUrl لن يعدّل هذا الرابط لأنه 
 ## 9. إعداد Firebase خطوة بخطوة (مشروع جديد لعميل جديد)
 
 1. **console.firebase.google.com** ← Add project (يمكن تعطيل Analytics).
-2. **Project settings ← General ← Your apps ← Web (`</>`)** ← سجّل التطبيق ← انسخ `firebaseConfig` ووزّعه على:
+2. **Project settings ← General ← Your apps ← Web (`</>`)** ← سجّل التطبيق ← انسخ `firebaseConfig` ووزّعه على (كلها في `js/config.js` — الجدول الكامل في القسم 0-ب):
    `apiKey→firebaseApiKey`, `authDomain→firebaseAuthDomain`, `projectId→firebaseProjectId`, `storageBucket→firebaseStorageBucket`, `messagingSenderId→firebaseMessagingSenderId`, `appId→firebaseAppId`.
 3. **Build ← Realtime Database ← Create database** (ليس Firestore). اختر منطقة قريبة من الزبائن (مثلاً `europe-west1`) وابدأ بوضع Locked. انسخ العنوان من أعلى صفحة البيانات ← `firebaseDatabaseURL`.
    - أوروبا/آسيا: `https://PROJECT-default-rtdb.REGION.firebasedatabase.app/`، وأمريكا: `https://PROJECT-default-rtdb.firebaseio.com/`.
@@ -569,17 +684,19 @@ return d.secure_url;   // getIkUrl لن يعدّل هذا الرابط لأنه 
 
 ## 11. تخصيص القالب لعميل جديد (Checklist)
 
-1. **Firebase جديد** لكل عميل (مشروع مستقل) ثم تعبئة `config.js` + القواعد (القسم 9).
-2. حساب ImgBB/ImageKit (يمكن مشاركتهم بين العملاء لكن الأفضل فصلهم).
-3. `config.js`: الاسم، الوصف، العملة، `adminEmails`، `dataVersion` (ابدأ بـ 1).
-4. **الشعار**: استبدل `assets/logo/logo.png` (يُستخدم في كل مكان).
-5. **الألوان**: في `css/style.css` ← كتلة **Brand** في `:root` فقط (`--primary --secondary --accent --bg --surface --text --text-2 --border`)، والمشتقات تُحسب تلقائياً (انظر القسم 5-ب). لا حاجة للبحث عن ألوان ثابتة في `refresh.css`.
-6. **الخطوط**: رابط Google Fonts موجود الآن في `<head>` **كل** الصفحات (IBM Plex Sans Arabic)؛ لتغيير الخط بدّل الرابط في كل الصفحات + `--font-display/--font-body`.
-7. **النصوص الثابتة**: نصوص الهيرو والمزايا في `index.html`، وصفحة `about.html`، و`<title>` في كل صفحة (الافتراضي "متجرك الإلكتروني")، و`<meta description>` في الرئيسية.
-8. **أيقونات الأقسام**: `icons.js` يحتوي أيقونات قديمة لمتجر حيوانات أليفة (`paw, bone, fish, feather, toy, bed, cage, collar, brush, spray, bag`) ولا تظهر في منتقي الأدمن؛ المنتقي يقرأ `CATEGORY_ICON_KEYS = ["box","bag","tag","shirt","ruler","layers","gauge","truck","home"]`. لإضافة أيقونة: أضف SVG إلى `ICONS` وأضف مفتاحها إلى `CATEGORY_ICON_KEYS`.
-9. **حقول التوصيل ورسالة واتساب**: عدّل `whatsapp.js` إن كان العميل خارج العراق أو يريد صيغة أخرى.
-10. **سطر المبرمج** في `renderFooter()` داخل `app.js`.
-11. بعد النشر: تسجيل الدخول، تعبئة **الإعدادات** من لوحة الأدمن (الواتساب أولاً، وإلا يرفض الموقع إكمال الطلب).
+> الخطوات التفصيلية (مع جدول مطابقة مفاتيح Firebase) في **القسم 0-ب**. هذا ملخص للمراجعة السريعة:
+
+1. نسخة مستقلة من المجلد + **مشروع Firebase جديد** لكل عميل (القسم 9) + حسابا ImgBB وImageKit (الأفضل فصلهما لكل عميل).
+2. انسخ `js/config.template.js` فوق `js/config.js` وعبّئ **كل** الأقسام (هوية، Firebase، `adminEmails`، `imgbbApiKey`، `imageKitEndpoint`، `googleAnalyticsId`، `theme`، `siteUrl`، `credit`، `dataVersion` يبدأ بـ 1).
+3. **الشعار:** استبدل `assets/logo/logo.png` (أو غيّر `logo`) وارفع الإصدار: `node tools/set-version.js N`.
+4. **الألوان والخط والشكل:** `config.theme` فقط (`preset` أو `colors`) — لا تلمس `style.css` ولا `refresh.css`.
+5. **عناوين الصفحات ووسوم المشاركة:** تلقائية من `storeName`/`storeTagline`/`storeDescription`/`siteUrl` عبر الرموز `{{...}}`.
+6. **النصوص التسويقية الثابتة** (هيرو ومزايا الرئيسية، صفحة `about.html`): نصوص عامة تصلح لأغلب المتاجر؛ عدّلها في نسخة العميل عند الحاجة.
+7. **أيقونات الأقسام**: `icons.js` يحتوي أيقونات قديمة لمتجر حيوانات أليفة (`paw, bone, fish, feather, toy, bed, cage, collar, brush, spray, bag`) ولا تظهر في منتقي الأدمن؛ المنتقي يقرأ `CATEGORY_ICON_KEYS = ["box","bag","tag","shirt","ruler","layers","gauge","truck","home"]`. لإضافة أيقونة: أضف SVG إلى `ICONS` وأضف مفتاحها إلى `CATEGORY_ICON_KEYS`.
+8. **حقول التوصيل ورسالة واتساب**: عدّل `whatsapp.js` إن كان العميل خارج العراق أو يريد صيغة أخرى.
+9. **سطر المبرمج في الفوتر**: `config.credit` (`show:false` لإخفائه).
+10. شغّل `node tools/check-config.js` و`node tests/run-tests.js` و`node tests/boot-tests.js`.
+11. بعد النشر: تسجيل الدخول، تعبئة **الإعدادات** من لوحة الأدمن (الواتساب أولاً، وإلا يرفض الموقع إكمال الطلب)، وإضافة نطاق الموقع إلى Authorized domains.
 
 ### ملاءمة القالب لأنواع المتاجر
 
@@ -621,9 +738,18 @@ return d.secure_url;   // getIkUrl لن يعدّل هذا الرابط لأنه 
 
 **تغيير عدد صفوف جدول منتجات الأدمن** ← `ADMIN_PRODUCTS_PAGE_SIZE` في `admin.js` (الافتراضي 40).
 
-**تغيير سرعة التحديث/مدة الكاش** ← أربعة أماكن يجب أن تتفق: (1) `META_PULL_MS` و(2) `INDEX_CHECK_MS` في أعلى `store.js`، (3) فاصل `setInterval(... , 20 * 1000)` في آخر `store.js`، (4) الرقم `20000` (مرتين) في سكربت الجلب المبكر داخل `<head>` في `index.html`. رفعها (مثلاً إلى 300000 = 5 دقائق) يقلل طلبات Firebase.
+**تغيير سرعة التحديث/مدة الكاش** ← أربعة أماكن يجب أن تتفق: (1) `META_PULL_MS` و(2) `INDEX_CHECK_MS` في أعلى `store.js`، (3) فاصل `setInterval(... , 20 * 1000)` في آخر `store.js`، (4) الرقم `60000` (مرتين) في كتلة "الجلب المبكر" داخل `js/boot.js` (كانت سابقاً سكربتاً مضمّناً في `index.html`؛ علماً أن القيمة هناك 60 ثانية بينما فاصل الفحص 20 ثانية). رفعها (مثلاً إلى 300000 = 5 دقائق) يقلل طلبات Firebase.
 
-**إضافة عملة/تنسيق أرقام** ← `formatPrice` في `whatsapp.js`.
+**إضافة عملة/تنسيق أرقام** ← الرمز من `config.currencySymbol`؛ التنسيق في `formatPrice` في `whatsapp.js`.
+
+**تبديل قالب ألوان أو لون واحد لمتجر** ← `config.js ← theme.preset` أو `theme.colors.<اسم>` (القسم 5-ب). لا شيء آخر.
+
+**إضافة مفتاح إعداد جديد خاص بالمتجر (مثل رابط فيسبوك أو لون شريط الإعلان)**
+1. أضفه إلى `config.js` **و`config.template.js`** مع تعليق عربي يشرح مصدره وصيغته.
+2. استعمله في الكود عبر `STORE_CONFIG.<المفتاح>` مع قيمة احتياطية آمنة (الاختبارات تحقن كائناً بسيطاً بدون كل المفاتيح).
+3. إن كان قيمة تظهر في عنوان/وسوم الصفحة فأضفه إلى `TOKENS` في `boot.js`، أو استعمل `data-cfg` للنصوص.
+4. إن كان لوناً فأضفه إلى `theme.colors` و`buildVars()` في `boot.js` ثم استخدم المتغير في CSS (لا لون ثابت).
+5. أضف تحققه إلى `tools/check-config.js` واختباراً في `tests/boot-tests.js` (أو `run-tests.js` إن كان يخص `Store`).
 
 ---
 
@@ -639,15 +765,19 @@ return d.secure_url;   // getIkUrl لن يعدّل هذا الرابط لأنه 
 8. لا تغيّر ترتيب السكربتات (القسم 1) ولا تحمّل `firebase-auth` بعد `store.js`.
 9. الواجهة عربية RTL: حافظ على `dir="rtl"` واستخدم خصائص منطقية (`padding-inline`, `margin-inline`) عند الإمكان.
 10. لا تكتب مفاتيح حقيقية في الردود أو الدليل؛ استخدم `YOUR_...`.
-11. **لا تضع ألواناً ثابتة** في CSS أو أنماط مضمّنة جديدة: استعمل متغيرات `:root` (القسم 5-ب). لا تضف كتل `<style>` داخل HTML.
+11. **لا تضع ألواناً ثابتة** في CSS أو أنماط مضمّنة جديدة: استعمل متغيرات الثيم (`--primary`, `--text-rgb`, `--on-primary`… القسم 5-ب). لا تضف كتل `<style>` داخل HTML. **لا تعدّل ألوان `:root` في `style.css`** لتخصيص متجر — هذا من `config.theme`.
 12. عند اقتراح تعديل اذكر: اسم الملف، اسم الدالة، **الكود الكامل للدالة بعد التعديل** (لا شظايا)، وهل يلزم رفع `dataVersion` أو تعديل Rules.
 13. **لا تستدعِ `Store.saveProducts/deleteProduct/updateProduct` من صفحات الزوار** ولا تكتب قائمة المنتجات إلى Firebase من كاش قد يكون جزئياً. الكتابة للأدمن فقط وبعد `Store.canWriteProducts()`. لإزالة منتج من الكاش فقط استعمل `Store._removeFromLocalCache(id)`.
 14. لا تضع مفتاح Algolia الإداري ولا أي سر في `config.js` (الملف عام).
 15. نتيجة `save*` للمنتجات قد تكون `false`: لا تعلن نجاحاً قبل `await Store.whenProductsSaved()`.
-16. شغّل `node tests/run-tests.js` بعد أي تعديل في `store.js`/`app.js`.
+16. شغّل `node tests/run-tests.js` بعد أي تعديل في `store.js`/`app.js`، و`node tests/boot-tests.js` بعد أي تعديل في `boot.js`/`config.js`.
 17. **أي تعديل على الأقسام/الإعلانات/الإعدادات من الأدمن** ← استدعِ `bumpMetaVersion()` بعده (القسم 7)، وإلا لن يصل للزوار.
 18. **لوحة الأدمن:** لا ترسم قوائم كاملة بلا تقسيم (صفحات/«عرض المزيد»)، ولا تضع `onclick` في كل صف بل مستمعاً واحداً، ولا تربط `render` بحدث `input` مباشرة (استعمل debounce)، وحرّك العناصر بـ `transform` لا بـ `left/right/width` (القسم 20).
-19. ارفع `?v=` **بنفس الرقم في كل صفحات HTML** (القسم 1)؛ أرقام مختلفة بين الصفحات تُهدر الكاش.
+19. ارفع `?v=` **بنفس الرقم في كل صفحات HTML** (القسم 1) بالأمر `node tools/set-version.js N`؛ أرقام مختلفة بين الصفحات تُهدر الكاش.
+20. **كل قيمة خاصة بمتجر (اسم، شعار، رابط، مفتاح خدمة، معرّف تحليلات، لون، خط، رقم هاتف، دومين، اسم مطوّر…) مكانها `js/config.js` حصراً.** ممنوع كتابتها في HTML أو CSS أو JS أو الاختبارات (باستثناء أمثلة `YOUR_...` في الدليل). عند اكتشاف قيمة كهذه منقولة في ملف آخر: انقلها إلى `config.js` (و`config.template.js`) واستبدلها بقراءة من `STORE_CONFIG`.
+21. **لا تلصق أكواد طرف ثالث** (Google Analytics، بكسل، خطوط، favicon، `preconnect`) داخل صفحات HTML؛ أضفها عبر `boot.js` مدفوعة بمفتاح في `config.js`. صفحات HTML تحمل فقط: `style.css` + `refresh.css` + `config.js` + `boot.js` في `<head>`.
+22. **لا تعدّل `config.template.js` بقيم حقيقية أبداً** (فقط `YOUR_...`)، وحافظ على تطابق مفاتيحه مع `config.js` (يتحقق `check-config.js` من القالب عند نسخه فوق `config.js`).
+23. شغّل `node tests/boot-tests.js` و`node tools/check-config.js` بعد أي تعديل على `boot.js` أو `config.js`.
 
 ---
 
@@ -679,7 +809,8 @@ return d.secure_url;   // getIkUrl لن يعدّل هذا الرابط لأنه 
 | تنبيه في الأدمن "تعذّر إنشاء/قراءة فهرس المتجر ws_index" | قاعدة `ws_index` غير مضافة في Firebase Rules | أضفها (القسم 9/19) ثم حدّث لوحة الأدمن |
 | الزائر يحمّل كل المنتجات (استهلاك مرتفع) وفي Console تحذير `ws_index غير موجود` | الفهرس لم يُبنَ بعد أو القراءة مرفوضة | افتح الأدمن مرة بعد إضافة القاعدة |
 | الاستيراد من Excel لا يحدّث شيئاً | الباركود/الاسم لا يطابق، أو أسماء الأعمدة غير مدعومة، أو المنتج بألوان/مقاسات (لا تُحدَّث كميته)، أو السعر/الكمية فارغان | راجع التقرير بعد الاستيراد وأسماء الأعمدة (القسم 7) |
-| الخطوط تختلف بين الصفحات | رابط Google Fonts غير موجود في `<head>` صفحة معيّنة (حالة صفحة جديدة) | انسخ روابط الخط من أي صفحة موجودة |
+| الخطوط/الألوان تختلف بين الصفحات أو لا تتغير | صفحة لا تحمل `config.js` + `boot.js` في `<head>` (صفحة جديدة)، أو خطأ في `config.js` يوقف الملف (افتح Console: ابحث عن `[theme]`)، أو `?v=` قديم | ضع `<script src="js/config.js">` ثم `<script src="js/boot.js">` بعد روابط CSS في `<head>` كباقي الصفحات، ثم `node tools/check-config.js` و`node tools/set-version.js N` |
+| الثيم لا يتغير رغم تعديل `config.js` | كاش المتصفح لـ `config.js` (الاستضافة)، أو لون غير صالح فتجاهله `boot.js` | تحقق من Console (`[theme] لون غير صالح…`) وصيغة `#RRGGBB`؛ `_headers` يجعل `/js/*` بلا كاش على Cloudflare/Netlify |
 | ألوان الأدمن/المتجر لا تتغير بعد تعديل CSS | الكاش: لم يُرفع `?v=` | ارفع الرقم في كل صفحة تحمّل الملف |
 | استهلاك Firebase مرتفع: الزائر ينزّل الأقسام/الإعلانات كل 20 ثانية | `ws_meta_v` غير موجود أو غير مقروء (القاعدة ناقصة) فيعتبرها الكود «تغيّرت» دائماً | القسم 9: قاعدة `ws_meta_v` + احفظ أي قسم من الأدمن لإنشاء الرقم |
 | لوحة الأدمن ثقيلة والقائمة الجانبية بالكاد تفتح عند الدخول لقسم المنتجات | كان الجدول يرسم كل المنتجات + صورها دفعة واحدة، وإعادة رسم كاملة مع كل حرف بحث، وتحريك القائمة بخاصية `right` | **أُصلح** (القسم 20). إن عاد البطء: افحص عدد صفوف `#productsTableBody` (يجب ≤ 40 + زر المزيد) |
@@ -706,15 +837,15 @@ return d.secure_url;   // getIkUrl لن يعدّل هذا الرابط لأنه 
 12. الاستيراد من Excel: لا يحدّث `inventory`، و`available` يُضبط `true` للمنتجات الموجودة التي كميتها > 0 (قد يُظهر منتجاً أخفاه الأدمن يدوياً) — **سلوك أبقيته كما كان؛ قرّر إن كنت تريد غيره**.
 13. بطاقة المنتج مكررة في `products.js` و`index.html` (عدّل الاثنين).
 14. `CODE_ADS` غير معرّف (خطاف اختياري). `iconSvg("image")` غير موجود في `ICONS` (يعرض `box`).
-15. `--font-display` يذكر IBM Plex Sans Arabic غير المحمَّل (يسقط إلى Tajawal).
-16. `og:url`/`og:image` في `index.html` ثابتة على نطاق الاختبار (`pages.dev`) وسلسلة `preconnect` تحمل عنوان Firebase مضمّناً — **غيّرها لكل عميل** (القسم 11).
+15. ~~`--font-display` يذكر IBM Plex Sans Arabic غير المحمَّل~~ ← **حُلّت (2026-10-21):** الخط من `config.theme.fontFamily` وهو الذي يُحمَّل فعلاً.
+16. ~~`og:url`/`og:image`/`preconnect` ثابتة في `index.html`~~ ← **حُلّت (2026-10-21):** صارت من `config.siteUrl` و`config.logo` و`firebaseDatabaseURL`. بقي قيد: وسوم `og:*` تُملأ بالجافاسكربت فلا تظهر في معاينات واتساب/فيسبوك (القسم 18-ب).
 17. `localStorage` محدود (~5MB): الكتالوجات الكبيرة قد تُحفظ في الذاكرة فقط لتلك الجلسة (يعاد تحميلها في الزيارة التالية).
 18. أسماء المتغيرات القديمة (`--olive-*` ...) باقية كاختصارات للتوافق (انظر 5-ب).
 21. **بقايا غير مستخدمة:** `algoliaThreshold` في `config.js`؛ دوال `getProductsCount/isProductsCountStale/fetchRemoteProductsCount`؛ مفتاح `ws_mini_index` في `seedIfNeeded`؛ `getMiniIndex` (اسم قديم). لا تؤذي لكنها قد تضلّل — احذفها عند التنظيف.
 22. 🔴 `config.js` الحالي يحوي `algoliaAdminKey` **حقيقياً** (ظاهر لكل زائر) رغم أن Algolia معطّل — احذفه وبدّله من لوحة Algolia.
 23. 🟠 **الفحص كل 20 ثانية:** كل تبويب ظاهر يرسل ≈6 طلبات/دقيقة لـ Firebase حتى بلا تغيير (صغيرة جداً لكنها تُحسب كطلبات). لمتاجر كثيرة الزوار ارفع الفواصل (القسم 12).
 24. 🟡 نافذة «تم تحديث الموقع» غير موجودة في `admin.html` (الكود فقط) — القسم 7.
-25. 🟡 `og:url` و`og:image` في `index.html` يشيران لنطاق عميل آخر (`ahmed-mushtaq.pages.dev`) و`preconnect` يحمل عنوان Firebase مضمّناً: **غيّرها لكل عميل** (القسم 11).
+25. ✅ (حُلّت 2026-10-21) كانت `og:url`/`og:image` تشير لنطاق عميل آخر و`preconnect` يحمل عنوان Firebase مضمّناً؛ الآن كلها من `config.js`.
 26. 🟡 بقايا إضافية: `META_CACHE_MS` (تستعمله دوال العدّاد غير المستخدمة فقط) و`REFRESH_MS` غير مستعمل، وعناوين الاختبارات تذكر «30 دقيقة».
 19. **السعر القديم موجود الآن:** حقل `oldPrice` في المنتج (يظهر مشطوباً بجانب السعر فقط عند `isOffer` و`oldPrice > price`). الإدخال من نافذة المنتج في الأدمن، والعرض عبر `priceHtml`.
 20. لم أستطع **تشغيل المتصفح أو Firebase أو Algolia أو ImgBB** في بيئة المراجعة (لا شبكة): سلوك الواجهة والخدمات الخارجية لم يُختبر حياً (انظر القسم 18).
@@ -798,6 +929,22 @@ return d.secure_url;   // getIkUrl لن يعدّل هذا الرابط لأنه 
 **ما لم يُتحقق منه (لا شبكة ولا متصفح):** تشغيل الصفحات فعلياً، Firebase (قراءة/كتابة/Rules/Auth)، Algolia، ImgBB/ImageKit، واتساب، رسوم CSS. دوال `admin.js` المعتمدة على DOM لم تُختبر آلياً (فُحصت بالقراءة وفحص الصياغة فقط). **جرّب يدوياً:** تسجيل دخول الأدمن، إضافة/تعديل/حذف منتج، استيراد Excel، تجهيز طلب، طلب من السلة، صفحة المنتج، المتجر مع البحث والترتيب.
 
 **ملاحظة بيئة:** المشروع بلا `package.json` (لا build/lint/typecheck)، فلا توجد أوامر لها لتُشغَّل غير الاختبارات المضافة.
+
+---
+
+### 18-ب. توحيد الإعدادات في ملف واحد (2026-10-21)
+
+| # | ما تغيّر | الملفات |
+|---|---|---|
+| 1 | **`config.js` صار مصدر كل ما يخص المتجر:** هوية + شعار + تواصل + Firebase + ImgBB + ImageKit + Google Analytics + Algolia + أدمن + **ثيم** + SEO + حقوق المطوّر. نسخة فارغة `config.template.js` | `js/config.js`, `js/config.template.js` |
+| 2 | **محرّك `boot.js`** يطبّق الإعدادات: ثيم (5 قوالب + ألوان مخصصة + اشتقاق تلقائي للدرجات والتباين)، خط، favicon، `preconnect`، GA، رموز `{{...}}`، جلب مبكر | `js/boot.js` |
+| 3 | **HTML:** حُذفت من الصفحات التسع كل الأكواد الثابتة (GA بمعرّف ثابت — وكان غائباً عن `product/categories/contact`، روابط favicon، `preconnect` بعنوان Firebase الثابت، روابط الخطوط، سكربت الجلب المبكر) وحلّ محلها `config.js` + `boot.js`. عناوين الصفحات ووسوم `og:*` صارت رموزاً `{{storeName}}`… | `*.html` |
+| 4 | **CSS:** كل ما كان ثابتاً (`rgba(15,23,42,…)`, `rgba(37,99,235,…)`, `rgba(255,255,255,…)` فوق الأسطح الأساسية، `#B6C2D6`, `#CBD5E1`, `#94A3B8`, `#E0BA6E`, `color:#fff` فوق `--primary`) صار متغيرات يشتقها `boot.js`؛ فصار تغيير الثيم يشمل الهيرو والفوتر وشريط الأدمن | `css/style.css`, `css/refresh.css` |
+| 5 | **JS:** `Store.getSettings()` تدمج قيم `config.js` كافتراضيات؛ سطر المطوّر في الفوتر من `config.credit` (كان اسماً ورقماً ثابتين في `app.js`)؛ الشعار من `config.logo`؛ ألوان مضمّنة في `admin.js`/`products.js`/`cart.js` صارت متغيرات | `store.js`, `app.js`, `admin.js`, `products.js`, `cart.js` |
+| 6 | `algoliaAdminKey` فُرّغ في `config.js` (كان مفتاحاً إدارياً حقيقياً ظاهراً لكل زائر) و`useAlgolia:false` صريح | `js/config.js` |
+| 7 | أدوات وفحوص: `tools/check-config.js`، `tools/set-version.js`، `tests/boot-tests.js` (14 اختباراً)، واختبار دمج الإعدادات في `run-tests.js` (إجمالي 21 + 14) | `tools/`, `tests/` |
+
+**حدود معروفة:** (أ) وسوم `og:*` تُملأ بالجافاسكربت فلا تراها معاينات واتساب/فيسبوك. (ب) نصوص الهيرو والمزايا في `index.html` وصفحة `about.html` ما زالت نصوصاً تسويقية ثابتة (ليست إعدادات). (ج) `?v=` في روابط HTML يدوي لكن `set-version.js` يبدّله دفعة واحدة. (د) ألوان **بيانات المنتج** (`hex` لون المنتج) ليست جزءاً من الثيم.
 
 ---
 

@@ -1,114 +1,37 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-early-fetch>
 <head>
 
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9574QJNE8H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9574QJNE8H');
-</script>
-
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pet San | مستلزمات حيوانات أليفة</title>
-  <meta name="description" content="تصفّح تشكيلة واسعة من المنتجات المختارة بعناية واطلب مباشرة عبر واتساب مع توصيل سريع لباب بيتك.">
-  
-  <!-- PWA & Mobile Web App Meta -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#172554">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Pet San">
+  <title>{{storeName}} | {{storeTagline}}</title>
+  <meta name="description" content="{{storeDescription}}">
 
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/logo.png?v=85">
-  <link rel="shortcut icon" type="image/png" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo.png?v=85">
-
-  <!-- Open Graph Meta Tags للمعاينة في واتساب ووسائل التواصل -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://pet-san.pages.dev/">
+  <meta property="og:url" content="{{siteUrl}}/">
   <meta property="og:locale" content="ar_AR">
-  <meta property="og:site_name" content="Pet San">
-  <meta property="og:title" content="Pet San | مستلزمات حيوانات أليفة">
-  <meta property="og:description" content="تصفّح تشكيلة واسعة من المنتجات واطلب مباشرة عبر واتساب بسهولة وسرعة.">
-  <meta property="og:image" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:secure_url" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="600">
-  <meta property="og:image:height" content="600">
-  <meta property="og:image:alt" content="شعار متجر Pet San">
+  <meta property="og:site_name" content="{{storeName}}">
+  <meta property="og:title" content="{{storeName}} | {{storeTagline}}">
+  <meta property="og:description" content="{{storeDescription}}">
+  <meta property="og:image" content="{{logoUrl}}">
+  <meta property="og:image:alt" content="شعار المتجر">
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Pet San | مستلزمات حيوانات أليفة">
-  <meta name="twitter:description" content="تصفّح تشكيلة واسعة من المنتجات واطلب مباشرة عبر واتساب بسهولة وسرعة.">
-  <meta name="twitter:image" content="https://pet-san.pages.dev/assets/logo/logo.png">
+  <meta name="twitter:title" content="{{storeName}} | {{storeTagline}}">
+  <meta name="twitter:description" content="{{storeDescription}}">
+  <meta name="twitter:image" content="{{logoUrl}}">
 
-  <!-- ربط مسبق لسيرفرات المشروع الحالية لتسريع التحميل -->
-  <link rel="preconnect" href="https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
-  </noscript>
 
-  <link rel="stylesheet" href="css/style.css?v=86">
-  <link rel="stylesheet" href="css/refresh.css?v=86">
+  <link rel="stylesheet" href="css/style.css?v=77">
+  <link rel="stylesheet" href="css/refresh.css?v=77">
 
-  <script src="js/config.js?v=85"></script>
-  <script>
-  (function () {
-    try {
-      if (typeof STORE_CONFIG === "undefined" || !window.fetch) return;
-      var base = String(STORE_CONFIG.firebaseDatabaseURL || "").trim().replace(/\/+$/, "");
-      if (!base) return;
-      var E = window.__early = {};
-      function go(path, qs) {
-        var url = base + "/" + path + ".json" + (qs || "");
-        E[url] = fetch(url, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : undefined; }).catch(function () { return undefined; });
-      }
-      function q(f, v, l) {
-        return "?orderBy=" + encodeURIComponent(JSON.stringify(f)) + "&equalTo=" + encodeURIComponent(JSON.stringify(v)) + "&limitToFirst=" + l;
-      }
-      
-      var now = Date.now();
-      var lastMeta = Number(localStorage.getItem("last_meta_pull_time") || 0);
-      var lastIdx = Number(localStorage.getItem("ws_index_checked") || 0);
-      var hasLocalIndex = !!localStorage.getItem("ws_index_items");
-      var hasLocalMeta = !!localStorage.getItem("ws_categories");
-
-      if (!hasLocalMeta) {
-        go("ws_categories");
-        go("ws_settings");
-        go("ws_ads");
-      } else if (!lastMeta || (now - lastMeta) > 60000) {
-        go("ws_meta_v");
-      }
-
-      if (!hasLocalIndex || !lastIdx || (now - lastIdx) > 60000) {
-        go("ws_index/v");
-      }
-
-      if (!hasLocalIndex) {
-        go("ws_products", q("featured", true, 5));
-        go("ws_products", q("isOffer", true, 5));
-        go("ws_products", q("isNew", true, 5));
-      }
-    } catch (e) {}
-  })();
-  </script>
 
   <script type="speculationrules">{"prefetch":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
+  <script src="js/config.js?v=77"></script>
+  <script src="js/boot.js?v=77"></script>
 </head>
 <body>
 
@@ -119,20 +42,20 @@
     <div class="hero-blob"></div>
     <div class="container hero-inner">
       <div class="hero-copy">
-        <div class="hero-eyebrow-free">🐾 كل ما يحتاجه صديقك الأليف</div>
-        <h1>مستلزمات حيوانات أليفة تستحقها عائلتك الصغيرة</h1>
-        <p>طعام، ألعاب، أسِرّة، وأدوات عناية بجودة موثوقة — تصفّح المتجر واطلب منتجاتك المفضلة مباشرة عبر واتساب دون تعقيد.</p>
+        <div class="hero-eyebrow-free">✨ كل ما تحتاجه في مكان واحد</div>
+        <h1>تسوّق أفضل المنتجات بسهولة وثقة</h1>
+        <p>مجموعة مختارة بعناية، وطلب سهل ومباشر عبر واتساب دون أي تعقيد.</p>
         <div class="hero-cta">
           <a href="products.html" class="btn btn-primary">تسوق الآن</a>
           <a href="#categories" class="btn btn-outline">تصفح الأقسام</a>
         </div>
         <div class="hero-trust">
-          <div><strong>+20</strong><span>منتج متنوع</span></div>
-          <div><strong>24س</strong><span>توصيل سريع</span></div>
+          <div><strong>جودة</strong><span>منتجات مختارة</span></div>
+          <div><strong>سرعة</strong><span>توصيل سريع</span></div>
         </div>
       </div>
       <div class="hero-art" id="heroPromoContainer">
-        <div class="hero-art-default"><img src="assets/logo/logo.png?v=85" alt="شعار متجر Pet San" width="160" height="160" fetchpriority="high" decoding="async"></div>
+        <div class="hero-art-default"><img src="assets/logo/logo.png?v=77" alt="شعار المتجر" width="160" height="160" fetchpriority="high" decoding="async"></div>
       </div>
     </div>
   </section>
@@ -141,7 +64,8 @@
     <div class="container">
       <div class="section-head">
         <div>
-          <h2>تسوّق حسب القسم</h2>
+          <span class="section-tag" style="display:inline-block; margin-bottom:6px; font-weight:700; color:var(--sand-500, #b4883a); font-size:0.9rem;">✨ تصفح التشكيلات</span>
+          <h2>أقسام المتجر الرئيسية</h2>
           <p>اختر القسم المناسب لتصل لما تبحث عنه بدقة وسرعة.</p>
         </div>
         <a href="categories.html" class="btn btn-outline btn-sm">عرض كل الأقسام ←</a>
@@ -252,11 +176,10 @@
   
 <div id="site-footer"></div>
 
-<script src="js/icons.js?v=85" defer></script>
-<script src="js/store.js?v=85" defer></script>
-<script src="js/whatsapp.js?v=85" defer></script>
-<script src="js/app.js?v=85" defer></script>
-<script src="js/pwa-install.js?v=85" defer></script>
+<script src="js/icons.js?v=77" defer></script>
+<script src="js/store.js?v=77" defer></script>
+<script src="js/whatsapp.js?v=77" defer></script>
+<script src="js/app.js?v=77" defer></script>
 <script>
   var slideInterval = null;
   var HOME_SECTIONS = [
@@ -413,6 +336,7 @@
       paintSectionIfChanged(sec, cached, false);
     }
 
+    // الاعتماد على الفهرس المحلي فوراً إذا كان موجوداً لمنع أي استعلامات سيرفر إضافية
     if (typeof Store.hasIndexLocal === "function" && Store.hasIndexLocal()) {
       var idxList = getSectionFromIndex(sec.field);
       if (idxList && idxList.length) {
@@ -515,7 +439,7 @@
     clearInterval(slideInterval);
 
     if (!ads.length) {
-      if (hadSlider) heroArt.innerHTML = '<div class="hero-art-default"><img src="assets/logo/logo.png?v=85" alt="شعار متجر Pet San" width="160" height="160" decoding="async"></div>';
+      if (hadSlider) heroArt.innerHTML = '<div class="hero-art-default"><img src="assets/logo/logo.png?v=77" alt="شعار المتجر" width="160" height="160" decoding="async"></div>';
       return;
     }
 

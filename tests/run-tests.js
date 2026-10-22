@@ -61,6 +61,19 @@ async function atest(name, fn) {
   let env = loadEnv({});
   const Store = vm.runInContext("Store", env);
 
+  test("getSettings: قيم config.js افتراضية، وقيمة لوحة التحكم غير الفارغة تتغلب عليها", () => {
+    const e = loadEnv({ storeName: "من الإعدادات", whatsappNumber: "9647700000000", phone: "0770", currencySymbol: "$" });
+    const S = vm.runInContext("Store", e);
+    let st = S.getSettings();
+    assert.strictEqual(st.storeName, "من الإعدادات");
+    assert.strictEqual(st.whatsapp, "9647700000000");
+    assert.strictEqual(st.currencySymbol, "$");
+    S.saveSettings({ storeName: "من اللوحة", phone: "" });
+    st = S.getSettings();
+    assert.strictEqual(st.storeName, "من اللوحة", "قيمة اللوحة تتغلب");
+    assert.strictEqual(st.phone, "0770", "حقل فارغ في اللوحة ← يعود لقيمة config");
+    assert.strictEqual(st.whatsapp, "9647700000000");
+  });
   test("منتج بدون ألوان: المتاح = stock", () => {
     assert.strictEqual(Store.isProductAvailable({ available: true, stock: 3 }), true);
     assert.strictEqual(Store.isProductAvailable({ available: true, stock: 0 }), false);

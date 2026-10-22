@@ -1,42 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9574QJNE8H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9574QJNE8H');
-</script>
   
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>من نحن | Pet San</title>
-
-  <!-- PWA & Mobile Web App Meta -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#172554">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Pet San">
-
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/logo.png?v=80">
-  <link rel="shortcut icon" type="image/png" href="assets/logo/logo.png?v=80">
-  <link rel="apple-touch-icon" href="assets/logo/logo.png?v=80">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo.png?v=80">
-
-  <!-- Arabic UI font (same on every page; non-blocking) -->
-  <link rel="preconnect" href="https://test3-2a6de-default-rtdb.europe-west1.firebasedatabase.app" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=80">
-  <link rel="stylesheet" href="css/refresh.css?v=80">
+<meta charset="UTF-8">
+<title>من نحن | {{storeName}}</title>
+<link rel="stylesheet" href="css/style.css?v=77">
+  <link rel="stylesheet" href="css/refresh.css?v=77">
+  <script src="js/config.js?v=77"></script>
+  <script src="js/boot.js?v=77"></script>
 </head>
 <body>
 
@@ -53,12 +25,12 @@
   <section class="section" style="padding-top:10px;">
     <div class="container about-hero">
       <div>
-        <h2 id="aboutStoreName">Pet San</h2>
-        <p id="aboutDescription">متجر إلكتروني يقدّم مستلزمات الحيوانات الأليفة المختارة بعناية.</p>
+        <h2 id="aboutStoreName">متجرك الإلكتروني</h2>
+        <p id="aboutDescription">متجر إلكتروني يقدّم منتجات مختارة بعناية.</p>
         <p>بدأنا برغبة في تسهيل حصول عملائنا على منتجات موثوقة، بعيدًا عن التعقيد وبأسلوب طلب بسيط عبر واتساب.</p>
       </div>
       <div class="hero-art" style="max-width:360px;margin-inline-start:auto;">
-        <img src="assets/logo/logo.png?v=80" alt="شعار متجر Pet San">
+        <img data-logo src="assets/logo/logo.png" alt="شعار المتجر">
       </div>
     </div>
   </section>
@@ -107,19 +79,18 @@
 <div id="site-footer"></div>
 
 <!-- سكربتات مؤجلة (defer): لا تحجب الرسم. القراءة من Firebase عبر REST داخل store.js (بدون SDK) -->
-<script src="js/config.js?v=80" defer></script>
-<script src="js/icons.js?v=80" defer></script>
-<script src="js/store.js?v=80" defer></script>
-<script src="js/whatsapp.js?v=80" defer></script>
-<script src="js/app.js?v=80" defer></script>
-<script src="js/pwa-install.js?v=80" defer></script>
+<script src="js/icons.js?v=77" defer></script>
+<script src="js/store.js?v=77" defer></script>
+<script src="js/whatsapp.js?v=77" defer></script>
+<script src="js/app.js?v=77" defer></script>
 <script>
+  /* تُستدعى عند التحميل وعند وصول الإعدادات من Firebase (كانت تُرسم مرة واحدة فقط → بيانات ناقصة لأول زائر) */
   function renderAboutPage() {
     var s = Store.getSettings();
     var nameEl = document.getElementById("aboutStoreName");
     var descEl = document.getElementById("aboutDescription");
-    if (nameEl) nameEl.textContent = s.storeName || "Pet San";
-    if (descEl) descEl.textContent = s.storeDescription || "متجر إلكتروني يقدّم مستلزمات الحيوانات الأليفة المختارة بعناية.";
+    if (nameEl) nameEl.textContent = s.storeName || "";
+    if (descEl) descEl.textContent = s.storeDescription || "";
 
     var html = "";
     if (s.instagram) html += '<a href="' + escapeHtml(safeUrl(s.instagram)) + '" target="_blank" rel="noopener">' + iconSvg("instagram") + "انستغرام</a>";

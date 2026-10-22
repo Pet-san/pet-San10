@@ -1,45 +1,13 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-no-analytics>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
-  <title>لوحة تحكم الأدمن | Pet San</title>
-
-  <!-- PWA & Mobile Web App Meta -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#172554">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Pet San">
-
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/logo.png?v=85">
-  <link rel="shortcut icon" type="image/png" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo.png?v=85">
-
-  <!-- Open Graph Meta Tags للمعاينة -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://pet-san.pages.dev/admin.html">
-  <meta property="og:locale" content="ar_AR">
-  <meta property="og:site_name" content="Pet San">
-  <meta property="og:title" content="لوحة تحكم الأدمن | Pet San">
-  <meta property="og:description" content="لوحة الإدارة والتحكم لمتجر Pet San.">
-  <meta property="og:image" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:secure_url" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="600">
-  <meta property="og:image:height" content="600">
-  <meta property="og:image:alt" content="شعار متجر Pet San">
-
-  <!-- Arabic UI font & Preconnect لقاعدة البيانات ومخزن الصور والخطوط -->
-  <link rel="preconnect" href="https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=85">
-  <link rel="stylesheet" href="css/refresh.css?v=85">
+  <title>لوحة تحكم الأدمن | {{storeName}}</title>
+<link rel="stylesheet" href="css/style.css?v=77">
+  <link rel="stylesheet" href="css/refresh.css?v=77">
+  <script src="js/config.js?v=77"></script>
+  <script src="js/boot.js?v=77"></script>
 </head>
 <body>
 
@@ -52,11 +20,11 @@
   <aside class="admin-sidebar" id="adminSidebar">
     <div class="brand" style="display:flex; align-items:center; justify-content:space-between; width:100%;">
       <div style="display:flex; align-items:center; gap:10px;">
-        <img src="assets/logo/logo.png?v=85" alt="شعار متجر Pet San" style="width:40px;height:40px;border-radius:50%;">
-        <span class="brand-name">Pet San<span style="color:rgba(255,255,255,.55); display:block; font-size:0.75rem;">لوحة التحكم</span></span>
+        <img data-logo src="assets/logo/logo.png" alt="شعار المتجر" style="width:40px;height:40px;border-radius:50%;">
+        <span class="brand-name"><span data-cfg="storeName" style="display:inline;margin:0;color:inherit;font:inherit">{{storeName}}</span><span style="color:rgba(var(--on-primary-rgb),.55);">لوحة التحكم</span></span>
       </div>
       <!-- زر إغلاق القائمة الجانبية في الموبايل -->
-      <button type="button" class="btn-icon btn-sm admin-close-sidebar" onclick="toggleAdminSidebar()" title="إغلاق القائمة" style="background:rgba(255,255,255,.1); border:none; color:#fff; cursor:pointer;">__ICON_CLOSE__</button>
+      <button type="button" class="btn-icon btn-sm admin-close-sidebar" onclick="toggleAdminSidebar()" title="إغلاق القائمة" style="background:rgba(var(--on-primary-rgb),.1); border:none; color:var(--on-primary); cursor:pointer;">__ICON_CLOSE__</button>
     </div>
 
     <nav class="admin-nav">
@@ -218,7 +186,7 @@
 
 <!-- ============ Product modal ============ -->
 <div class="modal-overlay" id="productModal">
-  <div class="modal-card" style="max-width: 90vw; width: 620px; max-height: 90vh; overflow-y: auto;">
+  <div class="modal-card" style="max-width: 90vw; width: 500px; max-height: 90vh; overflow-y: auto;">
     <div class="modal-head">
       <h3 id="productModalTitle" style="margin:0;">إضافة منتج</h3>
       <button class="close-modal" id="closeProductModal">__ICON_CLOSE__</button>
@@ -226,8 +194,8 @@
     <form id="productForm">
       <div class="field">
         <label style="display:flex; justify-content:space-between; align-items:center;">
-          الصورة الرئيسية للمنتج 
-          <button type="button" id="removeProductImageBtn" class="btn-icon btn-sm" style="color:#d32f2f;" title="مسح الصورة">__ICON_TRASH__</button>
+          صورة المنتج 
+          <button type="button" id="removeProductImageBtn" class="btn-icon btn-sm" style="color:var(--error);" title="مسح الصورة">__ICON_TRASH__</button>
         </label>
         <div class="image-upload">
           <div class="preview" id="productImagePreview"></div>
@@ -235,39 +203,46 @@
         </div>
       </div>
       
-      <!-- حقل الصور المتعددة للمنتج -->
+      <!-- ============ إضافة حقل الصور المتعددة ============ -->
       <div class="field">
-        <label>معرض صور إضافية للمنتج (اختياري)</label>
+        <label>صور إضافية للمنتج (اختياري)</label>
         <input type="file" id="productExtraImagesInput" accept="image/*" multiple>
         <div id="extraImagesPreview" style="display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap;"></div>
       </div>
+      <!-- =================================================== -->
 
-      <!-- حقل الباركود / كود المادة SKU -->
+      <!-- حقل الباركود / كود المادة SKU لربطه بنظام المحاسبة والإكسل -->
       <div class="field">
-        <label>الباركود / SKU (اختياري — للمزامنة مع نظام المحاسبة والإكسل)</label>
+        <label>الباركود / SKU (اختياري — للمزامنة مع نظام المحاسبة)</label>
         <input type="text" id="productBarcode" placeholder="امسح بالباركود أو اكتب الكود هنا...">
       </div>
 
       <div class="field"><label>اسم المنتج</label><input type="text" id="productName" required></div>
       <div class="field"><label>الوصف</label><textarea id="productDescription"></textarea></div>
-      <div class="field"><label>السعر الأساسي (د.ع)</label><input type="number" id="productPrice" min="0" required></div>
+      <div class="field"><label>السعر (د.ع)</label><input type="number" id="productPrice" min="0" required></div>
       <div class="field"><label>السعر القديم قبل الخصم (اختياري)</label><input type="number" id="productOldPrice" min="0" placeholder="يظهر مشطوباً بجانب السعر عند تفعيل «عرض خاص»"></div>
       <div class="field"><label>القسم</label><select id="productCategorySelect" required></select></div>
       
-      <!-- خيارات ومواصفات المنتج -->
-      <div class="field" style="background: var(--surface); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--line-strong);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <label style="margin: 0; font-weight: 700; font-size: 0.95rem; color: var(--ink-900);">خيارات ومواصفات المنتج</label>
-          <button type="button" id="addVariantBtn" class="btn btn-outline btn-sm">+ إضافة خيار</button>
-        </div>
-        <div id="variantsList" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
+      <div class="field">
+        <label style="display:flex;justify-content:space-between;align-items:center;">
+          الألوان (اختياري — مثال: منتجات الملابس)
+          <button type="button" id="addColorBtn" class="btn btn-outline btn-sm">+ إضافة لون</button>
+        </label>
+        <div id="colorsList" style="display:flex;flex-direction:column;gap:10px;"></div>
       </div>
 
-      <div class="field" id="productStockWrap">
-        <label id="productStockLabel">الكمية المتوفرة الكلية</label>
-        <input type="number" id="productStock" min="0" required>
+      <div class="field">
+        <label>الاحجام (اختياري) — افصل بينها بفاصلة</label>
+        <input type="text" id="productSizes" placeholder="مثال: S, M, L, XL">
       </div>
 
+      <div class="field" id="inventoryWrap" style="display:none;">
+        <label>المخزون حسب اللون و الحجم</label>
+        <div id="inventoryGrid" style="overflow-x:auto;"></div>
+        <p class="field-hint">إجمالي المخزون أدناه يُحسب تلقائيًا من هذه الكميات.</p>
+      </div>
+
+      <div class="field" id="productStockWrap"><label id="productStockLabel">الكمية المتوفرة الكلية</label><input type="number" id="productStock" min="0" required></div>
       <div class="field checkbox-row"><input type="checkbox" id="productAvailable"><label for="productAvailable" style="margin:0;">مفعّل / معروض في المتجر</label></div>
       <div class="field checkbox-row"><input type="checkbox" id="productFeatured"><label for="productFeatured" style="margin:0;">منتج مميز</label></div>
       <div class="field checkbox-row"><input type="checkbox" id="productNew"><label for="productNew" style="margin:0;">منتج جديد</label></div>
@@ -293,7 +268,7 @@
       <div class="field">
         <label style="display:flex; justify-content:space-between; align-items:center;">
           صورة القسم 
-          <button type="button" id="removeCategoryImageBtn" class="btn-icon btn-sm" style="color:#d32f2f;" title="مسح الصورة">__ICON_TRASH__</button>
+          <button type="button" id="removeCategoryImageBtn" class="btn-icon btn-sm" style="color:var(--error);" title="مسح الصورة">__ICON_TRASH__</button>
         </label>
         <div class="image-upload">
           <div class="preview" id="categoryImagePreview"></div>
@@ -301,13 +276,6 @@
         </div>
       </div>
       <div class="field"><label>اسم القسم</label><input type="text" id="categoryName" required></div>
-      
-      <!-- حقل القسم الأب لجعله قسماً فرعياً -->
-      <div class="field" id="categoryParentWrap">
-        <label>يتبع لقسم (اختياري — لجعله قسماً فرعياً)</label>
-        <select id="categoryParentSelect" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--line-strong); background:#fff; font-family:inherit;"></select>
-      </div>
-
       <div class="field">
         <label>الأيقونة (تظهر عند عدم وجود صورة للقسم)</label>
         <div id="categoryIconPicker" class="icon-picker"></div>
@@ -328,7 +296,7 @@
       <div class="field">
         <label style="display:flex; justify-content:space-between; align-items:center;">
           صورة الإعلان (يفضل أن تكون عرضية ومناسبة للموبايل)
-          <button type="button" id="removeAdImageBtn" class="btn-icon btn-sm" style="color:#d32f2f;" title="مسح الصورة">__ICON_TRASH__</button>
+          <button type="button" id="removeAdImageBtn" class="btn-icon btn-sm" style="color:var(--error);" title="مسح الصورة">__ICON_TRASH__</button>
         </label>
         <div class="image-upload">
           <div class="preview" id="adImagePreview" style="width: 140px; height: 70px; border-radius: 8px;"></div>
@@ -353,16 +321,15 @@
 <!-- مكتبة SheetJS لقراءة وتفكيك ملفات Excel و CSV مباشرة في المتصفح -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-<script src="js/config.js?v=85"></script>
-<script src="js/icons.js?v=85"></script>
+<script src="js/icons.js?v=77"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="js/store.js?v=85"></script>
-<script src="js/whatsapp.js?v=85"></script>
-<script src="js/app.js?v=85"></script>
-<script src="js/auth.js?v=85"></script>
-<script src="js/admin.js?v=85"></script>
+<script src="js/store.js?v=77"></script>
+<script src="js/whatsapp.js?v=77"></script>
+<script src="js/app.js?v=77"></script>
+<script src="js/auth.js?v=77"></script>
+<script src="js/admin.js?v=77"></script>
 <script>
   // تعبئة الأيقونات الثابتة
   document.querySelector(".admin-nav").innerHTML = document.querySelector(".admin-nav").innerHTML
@@ -402,6 +369,8 @@
   if(document.getElementById("removeAdImageBtn")) {
       document.getElementById("removeAdImageBtn").innerHTML = iconSvg("trash");
   }
+
+  // ملاحظة: renderOrdersTable() في admin.js تكتب الآن في الجدولين (ordersTableBody و ordersTableBody2).
 </script>
 </body>
 </html>

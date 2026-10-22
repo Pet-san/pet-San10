@@ -29,6 +29,23 @@ function whatsappDigitsOnly(number) {
   return String(number || "").replace(/[^0-9]/g, "");
 }
 
+/* فحص منع تكرار الطلبات السريعة (Rate Limiting 30s) */
+function checkOrderRateLimit() {
+  const lastOrderTime = Number(localStorage.getItem("ws_last_order_ts") || 0);
+  const now = Date.now();
+  if (lastOrderTime && (now - lastOrderTime) < 30000) {
+    const waitSec = Math.ceil((30000 - (now - lastOrderTime)) / 1000);
+    if (typeof showToast === "function") {
+      showToast("تم إرسال طلبك مؤخراً. يرجى الانتظار " + waitSec + " ثانية قبل إرسال طلب جديد.", "error");
+    } else {
+      alert("تم إرسال طلبك مؤخراً. يرجى الانتظار " + waitSec + " ثانية قبل إرسال طلب جديد.");
+    }
+    return false;
+  }
+  localStorage.setItem("ws_last_order_ts", String(now));
+  return true;
+}
+
 function showDeliveryModal(onConfirm) {
   let modal = document.getElementById("deliveryModal");
   const STORAGE_KEY = "ws_saved_customer_info";
@@ -140,6 +157,10 @@ function showDeliveryModal(onConfirm) {
     const rawPhone = document.getElementById("delPhone").value.trim();
     if (!validatePhoneNumber(rawPhone)) {
       document.getElementById("delPhone").focus();
+      return;
+    }
+
+    if (!checkOrderRateLimit()) {
       return;
     }
 

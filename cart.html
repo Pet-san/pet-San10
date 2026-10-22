@@ -1,63 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9574QJNE8H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9574QJNE8H');
-</script>
   
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سلة التسوق | Pet San</title>
-  <meta name="description" content="راجع مشترياتك وأكمل طلبك مباشرة عبر واتساب مع توصيل سريع لباب بيتك.">
-
-  <!-- PWA & Mobile Web App Meta -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#172554">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Pet San">
-
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/logo.png?v=85">
-  <link rel="shortcut icon" type="image/png" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo.png?v=85">
-
-  <!-- Open Graph Meta Tags للمعاينة في واتساب ووسائل التواصل -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://pet-san.pages.dev/cart.html">
-  <meta property="og:locale" content="ar_AR">
-  <meta property="og:site_name" content="Pet San">
-  <meta property="og:title" content="سلة التسوق | Pet San">
-  <meta property="og:description" content="راجع مشترياتك وأكمل طلبك مباشرة عبر واتساب بكل سهولة.">
-  <meta property="og:image" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:secure_url" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="600">
-  <meta property="og:image:height" content="600">
-  <meta property="og:image:alt" content="شعار متجر Pet San">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="سلة التسوق | Pet San">
-  <meta name="twitter:description" content="راجع مشترياتك وأكمل طلبك مباشرة عبر واتساب.">
-  <meta name="twitter:image" content="https://pet-san.pages.dev/assets/logo/logo.png">
-
-  <!-- Arabic UI font & Preconnect لقاعدة البيانات ومخزن الصور -->
-  <link rel="preconnect" href="https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=85">
-  <link rel="stylesheet" href="css/refresh.css?v=85">
+  <title>السلة | {{storeName}}</title>
+<link rel="stylesheet" href="css/style.css?v=77">
+  <link rel="stylesheet" href="css/refresh.css?v=77">
+  <script src="js/config.js?v=77"></script>
+  <script src="js/boot.js?v=77"></script>
 </head>
 <body>
 
@@ -79,6 +30,7 @@
           <div id="cartWarning" class="setup-note" style="display:none;">
             بعض المنتجات في سلتك لم تعد متوفرة بالكامل، الرجاء مراجعة الكميات قبل إرسال الطلب.
           </div>
+          <!-- إضافة الحاوية المسؤولة عن التمرير هنا -->
           <div class="cart-items-wrapper">
               <div id="cartItems"></div>
           </div>
@@ -99,14 +51,12 @@
 
 <div id="site-footer"></div>
 
-<!-- سكربتات مؤجلة (defer) بالإصدار v=85 -->
-<script src="js/config.js?v=85" defer></script>
-<script src="js/icons.js?v=85" defer></script>
-<script src="js/store.js?v=85" defer></script>
-<script src="js/whatsapp.js?v=85" defer></script>
-<script src="js/app.js?v=85" defer></script>
-<script src="js/cart.js?v=85" defer></script>
-<script src="js/pwa-install.js?v=85" defer></script>
+<!-- سكربتات مؤجلة (defer): لا تحجب الرسم. القراءة من Firebase عبر REST داخل store.js (بدون SDK) -->
+<script src="js/icons.js?v=77" defer></script>
+<script src="js/store.js?v=77" defer></script>
+<script src="js/whatsapp.js?v=77" defer></script>
+<script src="js/app.js?v=77" defer></script>
+<script src="js/cart.js?v=77" defer></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var btn = document.getElementById("checkoutBtn");

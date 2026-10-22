@@ -1,63 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9574QJNE8H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9574QJNE8H');
-</script>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>الأقسام | Pet San</title>
-  <meta name="description" content="تصفّح جميع أقسام متجر Pet San وتصنيفاتها للوصول إلى مستلزمات أليفك المفضلة بسرعة.">
-
-  <!-- PWA & Mobile Web App Meta -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#172554">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Pet San">
-
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/logo.png?v=85">
-  <link rel="shortcut icon" type="image/png" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" href="assets/logo/logo.png?v=85">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo.png?v=85">
-
-  <!-- Open Graph Meta Tags للمعاينة في واتساب ووسائل التواصل -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://pet-san.pages.dev/categories.html">
-  <meta property="og:locale" content="ar_AR">
-  <meta property="og:site_name" content="Pet San">
-  <meta property="og:title" content="أقسام المتجر | Pet San">
-  <meta property="og:description" content="تصفّح منتجاتنا بسهولة عبر استعراض الأقسام وتصنيفاتها الفرعية.">
-  <meta property="og:image" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:secure_url" content="https://pet-san.pages.dev/assets/logo/logo.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="600">
-  <meta property="og:image:height" content="600">
-  <meta property="og:image:alt" content="شعار متجر Pet San">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="أقسام المتجر | Pet San">
-  <meta name="twitter:description" content="تصفّح منتجاتنا بسهولة عبر استعراض الأقسام وتصنيفاتها الفرعية.">
-  <meta name="twitter:image" content="https://pet-san.pages.dev/assets/logo/logo.png">
-
-  <!-- Arabic UI font & Preconnect لقاعدة البيانات ومخزن الصور -->
-  <link rel="preconnect" href="https://pet-san-10-default-rtdb.europe-west1.firebasedatabase.app" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=85">
-  <link rel="stylesheet" href="css/refresh.css?v=85">
+  <title>الأقسام | {{storeName}}</title>
+<link rel="stylesheet" href="css/style.css?v=77">
+  <link rel="stylesheet" href="css/refresh.css?v=77">
+  <script src="js/config.js?v=77"></script>
+  <script src="js/boot.js?v=77"></script>
 </head>
 <body>
 
@@ -75,6 +25,7 @@
   <section class="section" style="padding-top: 25px;">
     <div class="container">
       <div class="category-grid" id="categoriesGrid" aria-busy="true" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+        <!-- سيتم رسم الأقسام برمجياً هنا -->
         <div class="cat-main-card skeleton-card" aria-hidden="true" style="min-height:150px"></div><div class="cat-main-card skeleton-card" aria-hidden="true" style="min-height:150px"></div><div class="cat-main-card skeleton-card" aria-hidden="true" style="min-height:150px"></div><div class="cat-main-card skeleton-card" aria-hidden="true" style="min-height:150px"></div>
       </div>
     </div>
@@ -83,13 +34,11 @@
 
 <div id="site-footer"></div>
 
-<!-- سكربتات مؤجلة (defer) بالإصدار v=85 -->
-<script src="js/config.js?v=85" defer></script>
-<script src="js/icons.js?v=85" defer></script>
-<script src="js/store.js?v=85" defer></script>
-<script src="js/whatsapp.js?v=85" defer></script>
-<script src="js/app.js?v=85" defer></script>
-<script src="js/pwa-install.js?v=85" defer></script>
+<!-- سكربتات مؤجلة (defer): لا تحجب الرسم. القراءة من Firebase عبر REST داخل store.js (بدون SDK) -->
+<script src="js/icons.js?v=77" defer></script>
+<script src="js/store.js?v=77" defer></script>
+<script src="js/whatsapp.js?v=77" defer></script>
+<script src="js/app.js?v=77" defer></script>
 <script>
   var catPageSig = null;
 
@@ -100,6 +49,7 @@
     var allCategories = Store.getCategories();
     var mainCategories = allCategories.filter(function (c) { return !c.parentId; });
 
+    // أول زيارة: لا نعرض "لا توجد أقسام" قبل أن تصل أول مزامنة (نُبقي الـ skeleton)
     if (!mainCategories.length && !LS.get("last_meta_pull_time")) return;
 
     var sig = JSON.stringify(allCategories.map(function (c) { return [c.id, c.name, c.parentId, c.image, c.icon]; }));
@@ -130,6 +80,7 @@
         subHtml += '</div>';
       }
 
+      // ملاحظة: لا نعرض "عدد المنتجات" لأن المتجر يحمّل المنتجات على دفعات (العدد المحلي غير دقيق وكان يظهر 0)
       return (
         '<div class="cat-main-card">' +
           '<a href="products.html?cat=' + encodeURIComponent(main.id) + '" class="cat-card-header">' +

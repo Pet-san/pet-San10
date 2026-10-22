@@ -1006,9 +1006,27 @@ const Store = {
     return (Number(product.stock) || 0) > 0;
   },
 
-  getSettings() { return Object.assign({}, memoParse(DB_KEYS.settings, {})); },
+  // الإعدادات = قيم config.js الافتراضية، تتغلب عليها أي قيمة غير فارغة محفوظة من لوحة التحكم
+  getSettings() {
+    const c = (typeof STORE_CONFIG !== "undefined" && STORE_CONFIG) || {};
+    const defaults = {
+      storeName: c.storeName, storeTagline: c.storeTagline, storeDescription: c.storeDescription,
+      whatsapp: c.whatsappNumber, phone: c.phone, phone2: c.phone2,
+      instagram: c.instagram, tiktok: c.tiktok, address: c.address, mapUrl: c.mapUrl,
+      workingHours: c.workingHours, deliveryInfo: c.deliveryInfo, currencySymbol: c.currencySymbol
+    };
+    const out = {};
+    Object.keys(defaults).forEach(function (k) { if (defaults[k] != null && String(defaults[k]).trim() !== "") out[k] = defaults[k]; });
+    const stored = memoParse(DB_KEYS.settings, {}) || {};
+    Object.keys(stored).forEach(function (k) {
+      const v = stored[k];
+      if (v === undefined || v === null || (typeof v === "string" && v.trim() === "")) { if (!(k in out)) out[k] = v; return; }
+      out[k] = v;
+    });
+    return out;
+  },
   saveSettings(patch) {
-    const updated = Object.assign(this.getSettings(), patch);
+    const updated = Object.assign({}, memoParse(DB_KEYS.settings, {}), patch);
     LS.set(DB_KEYS.settings, JSON.stringify(updated));
     syncNodeToFirebase(DB_KEYS.settings, updated);
   },

@@ -1,31 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تواصل معنا | Pet San</title>
-
-  <!-- PWA & Mobile Web App Meta -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#172554">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Pet San">
-
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/logo/logo.png?v=80">
-  <link rel="shortcut icon" type="image/png" href="assets/logo/logo.png?v=80">
-  <link rel="apple-touch-icon" href="assets/logo/logo.png?v=80">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo/logo.png?v=80">
-
-  <!-- Arabic UI font (same on every page; non-blocking) -->
-  <link rel="preconnect" href="https://test3-2a6de-default-rtdb.europe-west1.firebasedatabase.app" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"></noscript>
-  <link rel="stylesheet" href="css/style.css?v=80">
-  <link rel="stylesheet" href="css/refresh.css?v=80">
+<meta charset="UTF-8">
+<title>تواصل معنا | {{storeName}}</title>
+<link rel="stylesheet" href="css/style.css?v=77">
+  <link rel="stylesheet" href="css/refresh.css?v=77">
+  <script src="js/config.js?v=77"></script>
+  <script src="js/boot.js?v=77"></script>
 </head>
 <body>
 
@@ -59,13 +41,12 @@
 <div id="site-footer"></div>
 
 <!-- سكربتات مؤجلة (defer): لا تحجب الرسم. القراءة من Firebase عبر REST داخل store.js (بدون SDK) -->
-<script src="js/config.js?v=80" defer></script>
-<script src="js/icons.js?v=80" defer></script>
-<script src="js/store.js?v=80" defer></script>
-<script src="js/whatsapp.js?v=80" defer></script>
-<script src="js/app.js?v=80" defer></script>
-<script src="js/pwa-install.js?v=80" defer></script>
+<script src="js/icons.js?v=77" defer></script>
+<script src="js/store.js?v=77" defer></script>
+<script src="js/whatsapp.js?v=77" defer></script>
+<script src="js/app.js?v=77" defer></script>
 <script>
+  /* تُستدعى عند التحميل وعند وصول الإعدادات من Firebase (كانت تعرض "لم يتم إعداد بيانات التواصل" لأول زائر ولا تتحدّث) */
   function renderContactPage() {
     const s = Store.getSettings();
 
@@ -87,6 +68,7 @@
     }
 
     document.getElementById("contactCards").innerHTML = cards.length ? cards.map(function (c) {
+      // قراءة الأيقونة المخصصة أو الأيقونة الافتراضية
       const iconHtml = c.customIcon ? c.customIcon : iconSvg(c.icon);
       
       return '<div class="feature-card">' +
